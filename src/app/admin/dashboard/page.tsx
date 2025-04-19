@@ -1,38 +1,31 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { IconUsers, IconArticle, IconEye, IconMessageCircle } from '@tabler/icons-react';
+import { IconEye, IconArticle, IconMessageCircle2, IconUsers } from '@tabler/icons-react';
 
-interface StatCard {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  color: string;
-}
-
-const stats: StatCard[] = [
+const statsCards = [
   {
     title: 'Total Views',
     value: '10.2K',
-    icon: <IconEye size={24} />,
+    icon: IconEye,
     color: 'bg-blue-500',
   },
   {
     title: 'Blog Posts',
     value: '25',
-    icon: <IconArticle size={24} />,
+    icon: IconArticle,
     color: 'bg-green-500',
   },
   {
     title: 'Comments',
     value: '182',
-    icon: <IconMessageCircle size={24} />,
+    icon: IconMessageCircle2,
     color: 'bg-purple-500',
   },
   {
     title: 'Unique Visitors',
-    value: '3.1K',
-    icon: <IconUsers size={24} />,
+    value: '8.5K',
+    icon: IconUsers,
     color: 'bg-orange-500',
   },
 ];
@@ -48,79 +41,54 @@ const container = {
 };
 
 const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 },
 };
 
 export default function AdminDashboard() {
   return (
     <div className="p-8">
+      <h1 className="text-3xl font-bold mb-8">Dashboard Overview</h1>
+
       <motion.div
+        variants={container}
         initial="hidden"
         animate="show"
-        variants={container}
-        className="space-y-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        <motion.h1 
-          variants={item}
-          className="text-3xl font-bold text-gray-900"
-        >
-          Dashboard Overview
-        </motion.h1>
-
-        <motion.div 
-          variants={item}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {stats.map((stat) => (
+        {statsCards.map((card) => {
+          const Icon = card.icon;
+          return (
             <motion.div
-              key={stat.title}
+              key={card.title}
               variants={item}
-              className="bg-white rounded-xl shadow-md p-6 relative overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-gray-600 text-sm">{stat.title}</p>
-                  <p className="text-2xl font-semibold mt-2 text-gray-900">
-                    {stat.value}
-                  </p>
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-lg ${card.color}`}>
+                  <Icon size={24} className="text-white" />
                 </div>
-                <div className={`${stat.color} p-2 rounded-lg text-white`}>
-                  {stat.icon}
+                <div>
+                  <p className="text-gray-600 text-sm">{card.title}</p>
+                  <p className="text-2xl font-semibold mt-1">{card.value}</p>
                 </div>
               </div>
-              <div 
-                className={`absolute bottom-0 left-0 h-1 w-full ${stat.color} opacity-50`}
-              />
             </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div 
-          variants={item}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Recent Activity
-            </h2>
-            <div className="space-y-4">
-              {/* Add recent activity items here */}
-              <p className="text-gray-600">Coming soon...</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Quick Actions
-            </h2>
-            <div className="space-y-4">
-              {/* Add quick action buttons here */}
-              <p className="text-gray-600">Coming soon...</p>
-            </div>
-          </div>
-        </motion.div>
+          );
+        })}
       </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+          <p className="text-gray-600">Coming soon...</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <p className="text-gray-600">Coming soon...</p>
+        </div>
+      </div>
     </div>
   );
 } 

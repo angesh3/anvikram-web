@@ -1,80 +1,50 @@
 import { NextResponse } from 'next/server';
-import { generateSlug } from '@/utils/slug';
-import { BlogPost, BlogPostInput } from '@/types/blog';
-import { validateSession } from '@/lib/auth.server';
 import { cookies } from 'next/headers';
+import { getSession } from '@/lib/auth';
+import type { Session } from '@/lib/auth';
 
-// In-memory storage for blog posts (replace with database in production)
-let blogPosts = [
+// Mock data for demonstration
+const mockPosts = [
   {
     id: '1',
-    title: 'Getting Started with Cloud Architecture',
-    excerpt: 'Learn the fundamentals of cloud architecture and best practices.',
-    content: 'Full content here...',
-    publishDate: '2024-03-15',
-    status: 'published'
+    title: 'Getting Started with Next.js',
+    excerpt: 'Learn the basics of Next.js and build your first application.',
+    content: 'Next.js is a powerful React framework...',
+    createdAt: new Date().toISOString(),
   },
   {
     id: '2',
-    title: 'Security Best Practices in Modern Applications',
-    excerpt: 'Essential security practices for modern web applications.',
-    content: 'Full content here...',
-    publishDate: '2024-03-14',
-    status: 'published'
-  }
+    title: 'Understanding TypeScript',
+    excerpt: 'A comprehensive guide to TypeScript and its features.',
+    content: 'TypeScript adds static typing to JavaScript...',
+    createdAt: new Date().toISOString(),
+  },
 ];
 
-export async function GET() {
+async function validateRequest(): Promise<Session> {
+  const session = await getSession();
+  if (!session?.user?.email) {
+    throw new Error('Unauthorized');
+  }
+  return session;
+}
+
+export async function GET(): Promise<NextResponse> {
   try {
-    const token = cookies().get('session')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const isValid = await validateSession(token);
-    if (!isValid) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-    }
-
-    return NextResponse.json({ posts: blogPosts });
+    await validateRequest();
+    // Add your blog fetching logic here
+    return NextResponse.json({ posts: [] });
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(): Promise<NextResponse> {
   try {
-    const token = cookies().get('session')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const isValid = await validateSession(token);
-    if (!isValid) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
-    }
-
-    const data = await request.json();
-    const newPost = {
-      id: Date.now().toString(),
-      title: data.title,
-      excerpt: data.excerpt,
-      content: data.content,
-      publishDate: new Date().toISOString().split('T')[0],
-      status: 'draft'
-    };
-
-    blogPosts.push(newPost);
-    return NextResponse.json({ post: newPost });
+    await validateRequest();
+    // Add your blog post creation logic here
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error creating blog post:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 } 

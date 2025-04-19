@@ -9,12 +9,12 @@ export async function GET() {
       return NextResponse.json({ error: 'No session found' }, { status: 401 });
     }
 
-    const isValid = await validateSession(token);
-    if (!isValid) {
+    const session = await validateSession(token);
+    if (!session) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, user: session.user });
   } catch (error) {
     console.error('Session validation error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
