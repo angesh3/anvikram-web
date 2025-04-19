@@ -1,9 +1,4 @@
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Blog - Angesh Vikram',
-  description: 'Thoughts and insights on cloud, security, and leadership',
-};
+'use client';
 
 const posts = [
   {
@@ -22,36 +17,49 @@ const posts = [
 
 export default function Blog() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8">Blog</h1>
-      
-      {/* Search Bar */}
-      <div className="mb-8">
-        <input
-          type="search"
-          placeholder="Search posts..."
-          className="w-full px-4 py-2 border rounded-lg"
-        />
-      </div>
+    <div className="min-h-screen bg-white">
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-[3.8rem] font-bold text-[#333333] leading-[1.1] tracking-tight mb-6">
+              Blog
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Thoughts and insights on cloud architecture, security, and leadership.
+            </p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-12">
+            <input
+              type="search"
+              placeholder="Search posts..."
+              className="w-full px-6 py-3 border rounded-lg text-lg"
+            />
+          </div>
 
-      {/* Posts Grid */}
-      <div className="grid gap-8">
-        {posts.map((post, index) => (
-          <article key={index} className="border rounded-lg p-6 shadow-sm">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-2xl font-semibold">{post.title}</h2>
-              <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                {post.category}
-              </span>
-            </div>
-            <p className="text-gray-600 mb-4">{post.summary}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-500 text-sm">{post.date}</span>
-              <button className="text-blue-600 hover:text-blue-800">Read more →</button>
-            </div>
-          </article>
-        ))}
-      </div>
+          {/* Posts Grid */}
+          <div className="max-w-4xl mx-auto grid gap-8">
+            {posts.map((post, index) => (
+              <article key={index} className="bg-white rounded-lg p-8 shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <h2 className="text-2xl font-semibold text-gray-900">{post.title}</h2>
+                  <span className="px-4 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                    {post.category}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-6 text-lg">{post.summary}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">{post.date}</span>
+                  <button className="text-[#00A0E3] hover:text-blue-700 font-medium">
+                    Read more →
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 } 

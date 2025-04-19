@@ -30,40 +30,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] bg-black text-white py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="text-2xl">
-              <span className="text-white">Anges</span>
-              <span className="text-[#00A0E3]">AV</span>
-              <span className="text-white">ikram</span>
-            </Link>
-            <div className="flex items-center space-x-8">
-              <Link href="/about" className="text-white hover:text-gray-300">about</Link>
-              <Link href="/learn" className="text-white hover:text-gray-300">learn</Link>
-              <Link href="/portfolio" className="text-white hover:text-gray-300">portfolio</Link>
-              <Link href="/blog" className="text-white hover:text-gray-300">blog</Link>
-              <Link href="/contact" className="text-white hover:text-gray-300">contact</Link>
-              <div className="flex items-center space-x-4 ml-8">
-                <a href="https://twitter.com/angeshvikram" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                  <FaTwitter className="w-5 h-5" />
-                </a>
-                <a href="https://linkedin.com/in/angeshvikram" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                  <FaLinkedin className="w-5 h-5" />
-                </a>
-                <a href="https://github.com/anvikram" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                  <FaGithub className="w-5 h-5" />
-                </a>
-                <a href="https://instagram.com/angeshvikram" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">
-                  <FaInstagram className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <div className="min-h-screen" ref={containerRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
@@ -192,22 +158,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-8 border-t">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <p className="text-gray-500">© 2024 Angesh Vikram</p>
-            <div className="flex space-x-6">
-              <Link href="/about" className="text-gray-500 hover:text-gray-900">about</Link>
-              <Link href="/learn" className="text-gray-500 hover:text-gray-900">learn</Link>
-              <Link href="/portfolio" className="text-gray-500 hover:text-gray-900">portfolio</Link>
-              <Link href="/blog" className="text-gray-500 hover:text-gray-900">blog</Link>
-              <Link href="/contact" className="text-gray-500 hover:text-gray-900">contact</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 } 

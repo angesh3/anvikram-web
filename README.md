@@ -1,18 +1,20 @@
 # Angesh Vikram – Personal Website
 
-A modern, responsive personal website built with Next.js 14, Tailwind CSS, and enhanced with AI capabilities through OpenAI integration. Features a portfolio showcase, blog platform, and interactive contact form.
+A modern, responsive personal website built with Next.js 14, Tailwind CSS, and enhanced with AI capabilities through OpenAI integration. Features a dynamic portfolio showcase, interactive blog platform, and seamless contact form.
 
 ## 🚀 Features
 
 - **Modern Stack**: Built with Next.js 14, React 18, and TypeScript
 - **Responsive Design**: Mobile-first approach using Tailwind CSS
-- **Portfolio Showcase**: Interactive project cards with filtering capabilities
-- **Blog Platform**: Ready for content management
+- **Dynamic Portfolio**: Interactive project showcase with category filtering
+- **Split Design**: Innovative image transition effect with cursor interaction
+- **Blog Platform**: Ready for content management with AI integration
 - **Contact Form**: Interactive form with social media integration
 - **AI Integration**: OpenAI-powered features for content analysis
 - **Database Integration**: Supabase backend for data persistence
 - **Animations**: Smooth transitions using Framer Motion
 - **Docker Support**: Containerized deployment ready
+- **Image Optimization**: Sharp integration for optimal performance
 
 ## 🛠 Tech Stack
 
@@ -24,12 +26,14 @@ A modern, responsive personal website built with Next.js 14, Tailwind CSS, and e
 - **AI**: OpenAI Integration
 - **Development**: ESLint, TypeScript
 - **Deployment**: Docker, Docker Compose
+- **Image Processing**: Sharp
+- **Version Control**: Git
 
 ## 📦 Prerequisites
 
-- Node.js (v18 or higher) - for local development
-- npm or yarn - for local development
-- Docker and Docker Compose - for containerized deployment
+- Node.js (v18 or higher)
+- npm or yarn
+- Docker and Docker Compose
 - Supabase account
 - OpenAI API key
 
@@ -90,54 +94,39 @@ The application will be available at [http://localhost:3000](http://localhost:30
 anvikram-web/
 ├── src/
 │   ├── app/                 # Next.js 14 app directory
-│   ├── components/          # Reusable React components
-│   └── lib/                 # Utility functions and API clients
-├── public/                  # Static assets
-├── styles/                  # Global styles
-├── supabase/               # Supabase configurations
-├── Dockerfile              # Docker configuration
-└── docker-compose.yml      # Docker Compose configuration
+│   │   ├── about/          # About page
+│   │   ├── blog/           # Blog platform
+│   │   ├── contact/        # Contact form
+│   │   ├── learn/          # Learning resources
+│   │   ├── portfolio/      # Portfolio showcase
+│   │   └── page.tsx        # Home page with split design
+│   ├── components/         # Reusable React components
+│   └── lib/                # Utility functions and API clients
+├── public/
+│   └── images/            # Static images and assets
+├── styles/                # Global styles
+├── supabase/             # Supabase configurations
+├── Dockerfile            # Docker configuration
+└── docker-compose.yml    # Docker Compose configuration
 ```
 
-## 🔧 Configuration
+## 🔄 Version History
 
-### Supabase Setup
-1. Create a new Supabase project
-2. Run the migrations in `supabase/migrations`
-3. Update environment variables
+- **v1.3**: Added split design with cursor interaction
+- **v1.2**: Implemented portfolio filtering and image optimization
+- **v1.1**: Added Docker support and Sharp integration
+- **v1.0**: Initial release with core features
 
-### OpenAI Setup
-1. Obtain an API key from OpenAI
-2. Add the key to your environment variables
-
-## 🎨 Customization
-
-### Styling
-- Modify `tailwind.config.js` for theme customization
-- Update global styles in `src/app/globals.css`
-
-### Content
-- Update portfolio projects in `src/app/portfolio/page.tsx`
-- Modify contact information in `src/app/contact/page.tsx`
-
-## 📝 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
+## 🤝 Contributing
 
-**Angesh Vikram**
-- LinkedIn: [Angesh Vikram](https://linkedin.com/in/angeshvikram)
-- GitHub: [@angesh3](https://github.com/angesh3)
-- Twitter: [@angeshvikram](https://twitter.com/angeshvikram)
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/angesh3/anvikram-web/issues).
+
+## 📧 Contact
+
+Angesh Vikram - [@angeshvikram](https://twitter.com/angeshvikram)
+
+Project Link: [https://github.com/angesh3/anvikram-web](https://github.com/angesh3/anvikram-web)

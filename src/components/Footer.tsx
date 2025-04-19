@@ -1,54 +1,22 @@
+'use client';
+
 import Link from 'next/link';
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
-  const footerLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/social-hub', label: 'Hub' },
-    { href: '/contact', label: 'Contact' },
-  ];
-
-  const socialLinks = [
-    { href: 'https://linkedin.com/in/yourusername', label: 'LinkedIn' },
-    { href: 'https://github.com/yourusername', label: 'GitHub' },
-    { href: 'https://twitter.com/yourusername', label: 'Twitter' },
-  ];
-
+export default function Footer() {
   return (
-    <footer className="bg-gray-50">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <nav className="flex flex-wrap justify-center space-x-6" aria-label="Footer">
-          {footerLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-gray-500 hover:text-gray-900"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-8 flex justify-center space-x-6">
-          {socialLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-gray-400 hover:text-gray-500"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {link.label}
-            </a>
-          ))}
+    <footer className="py-8 border-t">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center">
+          <p className="text-gray-500">© 2024 Angesh Vikram</p>
+          <div className="flex space-x-6">
+            <Link href="/about" className="text-gray-500 hover:text-gray-900">about</Link>
+            <Link href="/learn" className="text-gray-500 hover:text-gray-900">learn</Link>
+            <Link href="/portfolio" className="text-gray-500 hover:text-gray-900">portfolio</Link>
+            <Link href="/blog" className="text-gray-500 hover:text-gray-900">blog</Link>
+            <Link href="/contact" className="text-gray-500 hover:text-gray-900">contact</Link>
+          </div>
         </div>
-        <p className="mt-8 text-center text-gray-400">
-          © {currentYear} Angesh Vikram. All rights reserved.
-        </p>
       </div>
     </footer>
   );
-};
-
-export default Footer; 
+} 
