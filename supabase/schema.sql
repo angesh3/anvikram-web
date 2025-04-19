@@ -1,0 +1,1 @@
+-- SQL schema for questions, tags, upvotes, users
