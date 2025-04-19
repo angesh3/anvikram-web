@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Cookies from 'js-cookie';
 
 interface KPICard {
   title: string;
@@ -17,7 +18,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check if user is authenticated
-    const isAdmin = localStorage.getItem('isAdmin');
+    const isAdmin = Cookies.get('isAdmin');
     if (!isAdmin) {
       router.push('/admin/login');
     } else {
@@ -53,7 +54,7 @@ export default function Dashboard() {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('isAdmin');
+    Cookies.remove('isAdmin', { path: '/' });
     router.push('/admin/login');
   };
 
