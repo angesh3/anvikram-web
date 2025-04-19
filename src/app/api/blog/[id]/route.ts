@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server';
-import { validateSession } from '@/lib/auth.server';
 import { cookies } from 'next/headers';
+import { validateSession } from '@/lib/auth.server';
 
 // Reference to the blog posts array (in a real app, this would be a database)
 let blogPosts = [
   {
     id: '1',
-    title: 'Getting Started with Cloud Architecture',
-    excerpt: 'Learn the fundamentals of cloud architecture and best practices.',
-    content: 'Full content here...',
-    publishDate: '2024-03-15',
-    status: 'published'
+    title: 'Getting Started with Next.js',
+    excerpt: 'Learn the basics of Next.js and build your first application.',
+    content: 'Next.js is a powerful React framework...',
+    status: 'published',
+    publishDate: '2024-03-15'
   },
   {
     id: '2',
-    title: 'Security Best Practices in Modern Applications',
-    excerpt: 'Essential security practices for modern web applications.',
-    content: 'Full content here...',
-    publishDate: '2024-03-14',
-    status: 'published'
+    title: 'Understanding TypeScript',
+    excerpt: 'A comprehensive guide to TypeScript and its features.',
+    content: 'TypeScript adds static typing to JavaScript...',
+    status: 'draft',
+    publishDate: '2024-03-14'
   }
 ];
 
@@ -32,8 +32,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const isValid = await validateSession(token);
-    if (!isValid) {
+    const session = await validateSession(token);
+    if (!session) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
@@ -44,7 +44,7 @@ export async function GET(
 
     return NextResponse.json({ post });
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    console.error('Error fetching post:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -62,28 +62,38 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const isValid = await validateSession(token);
-    if (!isValid) {
+    const session = await validateSession(token);
+    if (!session) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const data = await request.json();
+    const { title, excerpt, content, status } = await request.json();
+
+    if (!title || !content) {
+      return NextResponse.json(
+        { error: 'Title and content are required' },
+        { status: 400 }
+      );
+    }
+
     const postIndex = blogPosts.findIndex(p => p.id === params.id);
-    
     if (postIndex === -1) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Update the post
-    blogPosts[postIndex] = {
+    const updatedPost = {
       ...blogPosts[postIndex],
-      ...data,
-      id: params.id // Ensure ID doesn't change
+      title,
+      excerpt: excerpt || title,
+      content,
+      status: status || 'draft',
     };
 
-    return NextResponse.json({ post: blogPosts[postIndex] });
+    blogPosts[postIndex] = updatedPost;
+
+    return NextResponse.json({ post: updatedPost });
   } catch (error) {
-    console.error('Error updating blog post:', error);
+    console.error('Error updating post:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -101,8 +111,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const isValid = await validateSession(token);
-    if (!isValid) {
+    const session = await validateSession(token);
+    if (!session) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
@@ -116,7 +126,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting blog post:', error);
+    console.error('Error deleting post:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
