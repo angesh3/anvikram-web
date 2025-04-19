@@ -14,10 +14,11 @@ export default function Navigation() {
             <span className="text-white">ikram</span>
           </Link>
           <div className="flex items-center space-x-8">
+            <Link href="/" className="text-white hover:text-gray-300">home</Link>
             <Link href="/about" className="text-white hover:text-gray-300">about</Link>
-            <Link href="/learn" className="text-white hover:text-gray-300">learn</Link>
             <Link href="/portfolio" className="text-white hover:text-gray-300">portfolio</Link>
             <Link href="/blog" className="text-white hover:text-gray-300">blog</Link>
+            <Link href="/query-realm" className="text-white hover:text-gray-300">Query Realm</Link>
             <Link href="/contact" className="text-white hover:text-gray-300">contact</Link>
             <div className="flex items-center space-x-4 ml-8">
               <a href="https://twitter.com/angeshvikram" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-300">

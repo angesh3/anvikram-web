@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaTwitter, FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 
 export default function Home() {
-  // Initialize cursor position to 50 for perfect split
   const [cursorPosition, setCursorPosition] = useState({ x: 50, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -23,21 +22,20 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Calculate opacity and clip values based on cursor position
   const leftOpacity = Math.max(0, Math.min(1, (50 - cursorPosition.x) / 25 + 1));
   const rightOpacity = Math.max(0, Math.min(1, (cursorPosition.x - 50) / 25 + 1));
   const clipPosition = `${cursorPosition.x}%`;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen pt-16">
       {/* Hero Section */}
-      <div className="min-h-screen" ref={containerRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+      <div className="min-h-[calc(100vh-4rem)]" ref={containerRef}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-4rem)] flex items-center">
           <div className="w-full relative flex justify-between items-center">
             {/* Left Side Text */}
             <div className={`absolute left-0 w-1/3 transition-opacity duration-300 z-[60]`} 
                  style={{ opacity: leftOpacity }}>
-              <h1 className="text-[3.8rem] font-bold text-[#333333] leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
                 {'<Hands-On>'} Leader
               </h1>
               <p className="text-lg text-gray-600 mt-6 max-w-sm">
@@ -89,7 +87,7 @@ export default function Home() {
             {/* Right Side Text */}
             <div className={`absolute right-0 w-1/3 text-right transition-opacity duration-300 z-[60]`}
                  style={{ opacity: rightOpacity }}>
-              <h1 className="text-[3.8rem] font-bold text-[#333333] leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
                 {'<Architect>'}
               </h1>
               <p className="text-lg text-gray-600 mt-6 max-w-sm ml-auto">
@@ -100,60 +98,58 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Latest Work Section */}
-      <section className="py-20">
+      {/* Featured Work Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-center text-2xl font-medium text-gray-900 mb-16 tracking-wider">
-            SOME OF MY LATEST WORK
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
+            Featured Work
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <p className="text-lg text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+            Explore some of my recent projects in cloud architecture, security, and AI integration.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Link href="/portfolio" className="group">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="relative h-48">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-56">
                   <Image
-                    src="/images/home/photo-regular.jpeg"
-                    alt="Project 1"
+                    src="/images/portfolio/cloud.jpg"
+                    alt="Cloud Infrastructure"
                     fill
                     style={{ objectFit: 'cover' }}
+                    className="group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Cloud Security Framework</h3>
-                  <p className="text-gray-600">Enterprise-scale security architecture</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Cloud Infrastructure Automation</h3>
+                  <p className="text-gray-600">Scalable and secure cloud infrastructure solutions using AWS and Terraform.</p>
                 </div>
               </div>
             </Link>
             <Link href="/portfolio" className="group">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="relative h-48">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div className="relative h-56">
                   <Image
-                    src="/images/home/photo-regular.jpeg"
-                    alt="Project 2"
+                    src="/images/portfolio/ai.jpg"
+                    alt="AI Platform"
                     fill
                     style={{ objectFit: 'cover' }}
+                    className="group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">AI-Powered Security</h3>
-                  <p className="text-gray-600">ML models for threat detection</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Development Platform</h3>
+                  <p className="text-gray-600">End-to-end platform for developing and deploying machine learning models.</p>
                 </div>
               </div>
             </Link>
-            <Link href="/portfolio" className="group">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="relative h-48">
-                  <Image
-                    src="/images/home/photo-regular.jpeg"
-                    alt="Project 3"
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Cloud Architecture</h3>
-                  <p className="text-gray-600">Scalable infrastructure solutions</p>
-                </div>
-              </div>
+          </div>
+          <div className="text-center mt-12">
+            <Link 
+              href="/portfolio" 
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              View All Projects
+              <FaExternalLinkAlt className="ml-2 h-4 w-4" />
             </Link>
           </div>
         </div>

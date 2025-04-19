@@ -22,10 +22,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-white font-sans antialiased">
+      <body className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-sans antialiased">
         <div className="relative flex min-h-screen flex-col">
           <Navigation />
-          <main className="flex-1 pt-16">{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </div>
       </body>
