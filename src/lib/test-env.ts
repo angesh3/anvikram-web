@@ -7,12 +7,16 @@ export async function testConnections() {
     console.log('Testing Supabase connection...');
     
     // First, try to create a test table if it doesn't exist
-    const { error: createError } = await supabase.rpc('create_test_table', {
-      table_name: '_test'
-    }).catch(() => ({ error: { message: 'Failed to create test table' } }));
+    try {
+      const { error: createError } = await supabase.rpc('create_test_table', {
+        table_name: '_test'
+      });
 
-    if (createError) {
-      console.log('Test table creation skipped:', createError.message);
+      if (createError) {
+        console.log('Test table creation skipped:', createError.message);
+      }
+    } catch (err: any) {
+      console.log('Test table creation failed:', err.message);
     }
 
     // Then try to query the table
