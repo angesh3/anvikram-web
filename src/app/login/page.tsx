@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, Suspense, useState } from 'react';
 import { IconLock } from '@tabler/icons-react';
 
-export default function AdminLogin() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams?.get('from') || '/admin/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function AdminLogin() {
         const data = await response.json();
         
         if (response.ok && data.user?.role === 'admin') {
-          router.replace('/admin/dashboard');
+          router.replace(from);
         } else {
           setLoading(false);
         }
@@ -30,7 +32,7 @@ export default function AdminLogin() {
     };
 
     checkSession();
-  }, [router]);
+  }, [router, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +51,7 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        router.replace('/admin/dashboard');
+        router.replace(from);
       } else {
         setError(data.error || 'Invalid credentials');
         setLoading(false);
@@ -62,19 +64,18 @@ export default function AdminLogin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-gray-600">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg"
       >
         <div>
           <div className="flex justify-center mb-4">
@@ -82,12 +83,8 @@ export default function AdminLogin() {
               <IconLock size={24} className="text-blue-600" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-center text-gray-900">
-            Admin Login
-          </h2>
-          <p className="mt-2 text-center text-gray-600">
-            Please sign in with your admin credentials
-          </p>
+          <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">Admin Access</h1>
+          <p className="text-gray-600 text-center">Sign in to access the admin dashboard</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -154,4 +151,19 @@ export default function AdminLogin() {
       </motion.div>
     </div>
   );
-} 
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+// Mark this route as dynamic to handle server-side cookies
+export const dynamic = 'force-dynamic'; 

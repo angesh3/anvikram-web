@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { validateCredentials } from '@/lib/auth';
 import { createSession } from '@/lib/auth.server';
 
+// Mark this route as dynamic to handle cookies
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
@@ -21,24 +24,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create session with user info
-    const token = await createSession(user.id, user.email || '', 'admin');
+    // Create session with user info (this will set the cookie)
+    await createSession(user);
     
-    const response = NextResponse.json(
+    return NextResponse.json(
       { success: true },
       { status: 200 }
     );
-
-    // Set the session cookie
-    response.cookies.set('session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 // 24 hours
-    });
-
-    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

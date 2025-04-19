@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaTwitter, FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
 import Logo from './Logo';
-import LoginButton from './LoginButton';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (path: string) => pathname === path;
+
+  // Don't show admin login button on login or admin pages
+  const showAdminLogin = !pathname?.startsWith('/admin') && pathname !== '/login';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-white/10">
@@ -22,43 +25,101 @@ export default function Navigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/" 
-              className={`text-sm ${isActive('/') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/"
+              className={`text-sm ${
+                isActive('/') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               Home
             </Link>
-            <Link 
-              href="/about" 
-              className={`text-sm ${isActive('/about') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/about"
+              className={`text-sm ${
+                isActive('/about') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               About
             </Link>
-            <Link 
-              href="/portfolio" 
-              className={`text-sm ${isActive('/portfolio') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/portfolio"
+              className={`text-sm ${
+                isActive('/portfolio') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               Portfolio
             </Link>
-            <Link 
-              href="/blog" 
-              className={`text-sm ${isActive('/blog') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/blog"
+              className={`text-sm ${
+                isActive('/blog') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               Blog
             </Link>
-            <Link 
-              href="/query-realm" 
-              className={`text-sm ${isActive('/query-realm') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/query-realm"
+              className={`text-sm ${
+                isActive('/query-realm') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               Query Realm
             </Link>
-            <Link 
-              href="/contact" 
-              className={`text-sm ${isActive('/contact') ? 'text-white' : 'text-gray-300 hover:text-white'} transition-colors`}
+            <Link
+              href="/contact"
+              className={`text-sm ${
+                isActive('/contact') ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
             >
               Contact
             </Link>
-            <LoginButton />
+
+            {showAdminLogin && (
+              <motion.button
+                onClick={() => router.push('/login')}
+                className="flex items-center px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Admin Login
+              </motion.button>
+            )}
+
+            {/* Social Links */}
+            <div className="flex items-center space-x-4">
+              <a
+                href="https://twitter.com/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+              >
+                <FaTwitter size={18} />
+              </a>
+              <a
+                href="https://linkedin.com/in/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+              >
+                <FaLinkedin size={18} />
+              </a>
+              <a
+                href="https://github.com/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+              >
+                <FaGithub size={18} />
+              </a>
+              <a
+                href="https://instagram.com/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+              >
+                <FaInstagram size={18} />
+              </a>
+            </div>
           </div>
 
           {/* Mobile Navigation Button */}
@@ -143,7 +204,16 @@ export default function Navigation() {
             Contact
           </Link>
           <div className="px-3 py-2">
-            <LoginButton />
+            {showAdminLogin && (
+              <motion.button
+                onClick={() => router.push('/login')}
+                className="flex items-center px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Admin Login
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.div>

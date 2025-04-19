@@ -3,17 +3,22 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { BlogPost } from '@/types/blog';
-import { IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  summary: string | null;
+  category: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function PostsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   const fetchPosts = async () => {
     try {
@@ -22,16 +27,22 @@ export default function PostsPage() {
         throw new Error('Failed to fetch posts');
       }
       const data = await response.json();
-      setPosts(Array.isArray(data) ? data : data.posts || []);
+      setPosts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching posts');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
 
     try {
       const response = await fetch(`/api/blog/${id}`, {
@@ -44,13 +55,13 @@ export default function PostsPage() {
 
       setPosts(posts.filter(post => post.id !== id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete post');
+      setError(err instanceof Error ? err.message : 'An error occurred while deleting the post');
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -58,21 +69,26 @@ export default function PostsPage() {
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error: {error}
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong className="font-bold">Error: </strong>
+        <span className="block sm:inline">{error}</span>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-sm">
-        <h1 className="text-3xl font-bold text-gray-800">Blog Posts</h1>
-        <Link 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="p-6"
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Blog Posts</h1>
+        <Link
           href="/admin/posts/new"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
         >
-          <IconPlus size={20} />
           New Post
         </Link>
       </div>
@@ -81,33 +97,28 @@ export default function PostsPage() {
         {posts.map((post) => (
           <motion.div
             key={post.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-4 rounded-lg shadow-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow"
           >
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-gray-600">{post.excerpt}</p>
+                <p className="text-gray-600">{post.summary || post.content.substring(0, 150)}...</p>
                 <div className="mt-2 text-sm text-gray-500">
-                  <span className={`px-2 py-1 rounded ${post.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {post.status === 'published' ? 'Published' : 'Draft'}
-                  </span>
-                  <span className="ml-4">
-                    Last updated: {new Date(post.updated_at).toLocaleDateString()}
-                  </span>
+                  Created: {new Date(post.created_at).toLocaleDateString()}
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex space-x-2">
                 <Link
-                  href={`/admin/posts/${post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/edit`}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                  href={`/admin/posts/${post.id}/edit`}
+                  className="text-blue-500 hover:text-blue-600 transition-colors"
                 >
                   <IconEdit size={20} />
                 </Link>
                 <button
                   onClick={() => handleDelete(post.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                  className="text-red-500 hover:text-red-600 transition-colors"
                 >
                   <IconTrash size={20} />
                 </button>
@@ -115,13 +126,7 @@ export default function PostsPage() {
             </div>
           </motion.div>
         ))}
-
-        {posts.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            No posts found. Create your first post!
-          </div>
-        )}
       </div>
-    </div>
+    </motion.div>
   );
 } 
