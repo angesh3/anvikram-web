@@ -2,17 +2,14 @@
 
 import Link from 'next/link';
 import { FaTwitter, FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
+import Logo from './Logo';
 
 export default function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-black text-white py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl">
-            <span className="text-white">Anges</span>
-            <span className="text-[#00A0E3]">AV</span>
-            <span className="text-white">ikram</span>
-          </Link>
+          <Logo />
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-white hover:text-gray-300">home</Link>
             <Link href="/about" className="text-white hover:text-gray-300">about</Link>
