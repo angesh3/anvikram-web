@@ -1,30 +1,46 @@
 'use client';
 
-const posts = [
-  {
-    title: 'Building Secure Cloud Infrastructure',
-    summary: 'Learn about essential practices and patterns for maintaining robust security in modern cloud environments, focusing on Zero Trust Architecture and compliance frameworks.',
-    category: 'Cloud Security',
-    date: 'April 19, 2024',
-    readTime: '5 min read'
-  },
-  {
-    title: 'Leadership in Tech Teams',
-    summary: 'Effective strategies for leading technical teams, fostering innovation, and maintaining high performance in a fast-paced technology environment.',
-    category: 'Leadership',
-    date: 'April 18, 2024',
-    readTime: '4 min read'
-  },
-  {
-    title: 'AI Integration in Cloud Architecture',
-    summary: 'Exploring practical approaches to integrating AI capabilities into cloud-native applications while maintaining scalability and security.',
-    category: 'AI & Cloud',
-    date: 'April 17, 2024',
-    readTime: '6 min read'
-  }
-];
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { BlogPost } from '@/types/blog';
 
 export default function Blog() {
+  const router = useRouter();
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/blog');
+        const data = await response.json();
+        setPosts(data.filter((post: BlogPost) => post.isPublished));
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const filteredPosts = posts.filter(post =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pt-16">
       <section className="py-20">
@@ -44,6 +60,8 @@ export default function Blog() {
               <input
                 type="search"
                 placeholder="Search posts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-6 py-3 pr-12 bg-white border border-gray-200 rounded-xl text-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
               />
               <svg
@@ -64,9 +82,11 @@ export default function Blog() {
 
           {/* Posts Grid */}
           <div className="max-w-4xl mx-auto grid gap-8">
-            {posts.map((post, index) => (
-              <article 
-                key={index} 
+            {filteredPosts.map((post) => (
+              <motion.article 
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="flex flex-wrap gap-4 items-start mb-4">
@@ -81,9 +101,14 @@ export default function Blog() {
                   {post.summary}
                 </p>
                 <div className="flex flex-wrap items-center gap-6 text-sm">
-                  <span className="text-gray-500">{post.date}</span>
+                  <span className="text-gray-500">
+                    {new Date(post.publishedAt).toLocaleDateString()}
+                  </span>
                   <span className="text-gray-500">{post.readTime}</span>
-                  <button className="ml-auto text-blue-600 hover:text-blue-700 font-medium inline-flex items-center group">
+                  <button
+                    onClick={() => router.push(`/blog/${post.slug}`)}
+                    className="ml-auto text-blue-600 hover:text-blue-700 font-medium inline-flex items-center group"
+                  >
                     Read more
                     <svg 
                       className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
@@ -100,8 +125,19 @@ export default function Blog() {
                     </svg>
                   </button>
                 </div>
-              </article>
+              </motion.article>
             ))}
+
+            {filteredPosts.length === 0 && (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No posts found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search criteria or check back later for new posts.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>

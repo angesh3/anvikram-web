@@ -1,132 +1,126 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { validateSession, clearSession } from '@/lib/auth';
+import { IconUsers, IconArticle, IconEye, IconMessageCircle } from '@tabler/icons-react';
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+interface StatCard {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  color: string;
+}
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const isValid = await validateSession();
-      if (!isValid) {
-        router.replace('/admin/login');
-      } else {
-        setIsLoading(false);
-      }
-    };
-    
-    checkAuth();
-  }, [router]);
+const stats: StatCard[] = [
+  {
+    title: 'Total Views',
+    value: '10.2K',
+    icon: <IconEye size={24} />,
+    color: 'bg-blue-500',
+  },
+  {
+    title: 'Blog Posts',
+    value: '25',
+    icon: <IconArticle size={24} />,
+    color: 'bg-green-500',
+  },
+  {
+    title: 'Comments',
+    value: '182',
+    icon: <IconMessageCircle size={24} />,
+    color: 'bg-purple-500',
+  },
+  {
+    title: 'Unique Visitors',
+    value: '3.1K',
+    icon: <IconUsers size={24} />,
+    color: 'bg-orange-500',
+  },
+];
 
-  const handleLogout = async () => {
-    await clearSession();
-    router.replace('/admin/login');
-  };
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
 
+export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-          >
-            Logout
-          </motion.button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Sample KPI Cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800 p-6 rounded-xl shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-gray-400">Total Users</h3>
-            <p className="text-4xl font-bold mt-2">1,234</p>
-            <p className="text-sm text-green-500 mt-2">↑ 12% from last month</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gray-800 p-6 rounded-xl shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-gray-400">Active Sessions</h3>
-            <p className="text-4xl font-bold mt-2">856</p>
-            <p className="text-sm text-red-500 mt-2">↓ 3% from last month</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gray-800 p-6 rounded-xl shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-gray-400">Failed Logins</h3>
-            <p className="text-4xl font-bold mt-2">23</p>
-            <p className="text-sm text-green-500 mt-2">↑ 5% from last month</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gray-800 p-6 rounded-xl shadow-lg"
-          >
-            <h3 className="text-lg font-semibold text-gray-400">System Health</h3>
-            <p className="text-4xl font-bold mt-2">98%</p>
-            <p className="text-sm text-green-500 mt-2">All systems operational</p>
-          </motion.div>
-        </div>
-
-        {/* Recent Activity Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 bg-gray-800 rounded-xl p-6"
+    <div className="p-8">
+      <motion.div
+        initial="hidden"
+        animate="show"
+        variants={container}
+        className="space-y-8"
+      >
+        <motion.h1 
+          variants={item}
+          className="text-3xl font-bold text-gray-900"
         >
-          <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
-          <div className="space-y-4">
-            {[
-              { action: 'User Login', user: 'admin', time: '2 minutes ago', status: 'success' },
-              { action: 'Failed Login Attempt', user: 'unknown', time: '5 minutes ago', status: 'error' },
-              { action: 'Settings Updated', user: 'admin', time: '10 minutes ago', status: 'success' },
-              { action: 'Backup Completed', user: 'system', time: '1 hour ago', status: 'success' },
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center justify-between py-2 border-b border-gray-700">
+          Dashboard Overview
+        </motion.h1>
+
+        <motion.div 
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {stats.map((stat) => (
+            <motion.div
+              key={stat.title}
+              variants={item}
+              className="bg-white rounded-xl shadow-md p-6 relative overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-medium">{activity.action}</p>
-                  <p className="text-sm text-gray-400">by {activity.user}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-400">{activity.time}</p>
-                  <p className={`text-sm ${activity.status === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-                    {activity.status}
+                  <p className="text-gray-600 text-sm">{stat.title}</p>
+                  <p className="text-2xl font-semibold mt-2 text-gray-900">
+                    {stat.value}
                   </p>
                 </div>
+                <div className={`${stat.color} p-2 rounded-lg text-white`}>
+                  {stat.icon}
+                </div>
               </div>
-            ))}
+              <div 
+                className={`absolute bottom-0 left-0 h-1 w-full ${stat.color} opacity-50`}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div 
+          variants={item}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Recent Activity
+            </h2>
+            <div className="space-y-4">
+              {/* Add recent activity items here */}
+              <p className="text-gray-600">Coming soon...</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Quick Actions
+            </h2>
+            <div className="space-y-4">
+              {/* Add quick action buttons here */}
+              <p className="text-gray-600">Coming soon...</p>
+            </div>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 } 
