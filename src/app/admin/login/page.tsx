@@ -1,16 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
+import { checkLoginAttempts, recordLoginAttempt, setAuthCookie, validatePassword } from '@/lib/auth';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState<number | undefined>();
   const router = useRouter();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (lockoutTime && lockoutTime > 0) {
+      timer = setInterval(() => {
+        setLockoutTime(prev => prev ? prev - 1 : undefined);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [lockoutTime]);
+
+  const isLocked = lockoutTime !== undefined && lockoutTime > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,18 +31,31 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // In a real application, this would be an API call
-      if (username === 'admin' && password === 'admin123') {
-        // Set the cookie for authentication
-        Cookies.set('isAdmin', 'true', { 
-          expires: 1, // 1 day
-          path: '/',
-          sameSite: 'strict'
-        });
-        
-        // Redirect to dashboard
+      // Check login attempts
+      const { allowed, waitTime } = checkLoginAttempts(username);
+      if (!allowed) {
+        setLockoutTime(waitTime);
+        setError(`Too many failed attempts. Please try again in ${waitTime} seconds.`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate password requirements
+      const { isValid, errors } = validatePassword(password);
+      if (!isValid) {
+        setError(errors.join('\n'));
+        recordLoginAttempt(username, false);
+        setIsLoading(false);
+        return;
+      }
+
+      // In a real application, this would be an API call with proper password hashing
+      if (username === 'admin' && password === 'Admin123!') {
+        await setAuthCookie(username);
+        recordLoginAttempt(username, true);
         router.push('/admin/dashboard');
       } else {
+        recordLoginAttempt(username, false);
         setError('Invalid credentials');
       }
     } catch (err) {
@@ -53,6 +79,11 @@ export default function LoginPage() {
           <p className="mt-2 text-center text-sm text-gray-400">
             Enter your credentials to access the dashboard
           </p>
+          {isLocked && (
+            <p className="mt-2 text-center text-sm text-red-400">
+              Account locked. Try again in {lockoutTime} seconds
+            </p>
+          )}
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
@@ -69,7 +100,7 @@ export default function LoginPage() {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || isLocked}
               />
             </div>
             <div>
@@ -85,7 +116,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || isLocked}
               />
             </div>
           </div>
@@ -94,7 +125,7 @@ export default function LoginPage() {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-500 text-sm text-center bg-red-500/10 py-2 rounded-lg"
+              className="text-red-500 text-sm text-center bg-red-500/10 py-2 px-3 rounded-lg whitespace-pre-line"
             >
               {error}
             </motion.div>
@@ -102,12 +133,12 @@ export default function LoginPage() {
 
           <div>
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: isLocked ? 1 : 1.02 }}
+              whileTap={{ scale: isLocked ? 1 : 0.98 }}
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isLocked}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                (isLoading || isLocked) ? 'opacity-75 cursor-not-allowed' : ''
               }`}
             >
               {isLoading ? (
@@ -122,6 +153,17 @@ export default function LoginPage() {
                 'Sign in'
               )}
             </motion.button>
+          </div>
+
+          <div className="text-sm text-gray-400">
+            <p>Password requirements:</p>
+            <ul className="list-disc list-inside mt-1 space-y-1">
+              <li>At least 8 characters long</li>
+              <li>Contains at least one number</li>
+              <li>Contains at least one special character</li>
+              <li>Contains at least one uppercase letter</li>
+              <li>Contains at least one lowercase letter</li>
+            </ul>
           </div>
         </form>
       </motion.div>
