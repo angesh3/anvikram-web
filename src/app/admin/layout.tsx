@@ -39,7 +39,17 @@ export default function AdminLayout({
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      const response = await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+      
       setIsAuthenticated(false);
       router.replace('/admin/login');
     } catch (error) {
@@ -50,22 +60,22 @@ export default function AdminLayout({
   // Show loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
       </div>
     );
   }
 
   // If we're on the login page, just render the login form
   if (pathname === '/admin/login') {
-    return <div className="min-h-screen bg-gray-900">{children}</div>;
+    return <div className="min-h-screen bg-gray-100">{children}</div>;
   }
 
   // For other admin pages, show the layout with sidebar
   return (
-    <div className="min-h-screen bg-gray-100">
-      <AdminSidebar />
-      <main>{children}</main>
+    <div className="min-h-screen bg-gray-100 flex">
+      <AdminSidebar onLogout={handleLogout} />
+      <main className="flex-1 ml-64 p-6">{children}</main>
     </div>
   );
 } 

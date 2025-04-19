@@ -3,6 +3,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 
+interface AdminSidebarProps {
+  onLogout: () => void;
+}
+
 const sidebarLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: IconDashboard },
   { href: '/admin/posts', label: 'Posts', icon: IconArticle },
@@ -28,7 +32,7 @@ const linkVariants = {
   visible: { x: 0, opacity: 1 }
 };
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -66,13 +70,14 @@ export default function AdminSidebar() {
           </ul>
         </nav>
 
-        <button
+        <motion.button
+          variants={linkVariants}
           className="flex items-center p-3 rounded-lg text-red-400 hover:bg-gray-800 transition-colors duration-200 mt-auto"
-          onClick={() => {/* Add logout logic */}}
+          onClick={onLogout}
         >
           <IconLogout className="w-5 h-5 mr-3" />
           <span>Logout</span>
-        </button>
+        </motion.button>
       </div>
     </motion.aside>
   );
