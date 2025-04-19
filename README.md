@@ -12,6 +12,7 @@ A modern, responsive personal website built with Next.js 14, Tailwind CSS, and e
 - **AI Integration**: OpenAI-powered features for content analysis
 - **Database Integration**: Supabase backend for data persistence
 - **Animations**: Smooth transitions using Framer Motion
+- **Docker Support**: Containerized deployment ready
 
 ## 🛠 Tech Stack
 
@@ -22,15 +23,19 @@ A modern, responsive personal website built with Next.js 14, Tailwind CSS, and e
 - **Backend**: Supabase
 - **AI**: OpenAI Integration
 - **Development**: ESLint, TypeScript
+- **Deployment**: Docker, Docker Compose
 
 ## 📦 Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js (v18 or higher) - for local development
+- npm or yarn - for local development
+- Docker and Docker Compose - for containerized deployment
 - Supabase account
 - OpenAI API key
 
 ## 🚀 Getting Started
+
+### Local Development
 
 1. **Clone the repository**
    ```bash
@@ -56,8 +61,28 @@ A modern, responsive personal website built with Next.js 14, Tailwind CSS, and e
    npm run dev
    ```
 
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+### Docker Deployment
+
+1. **Build and run with Docker Compose**
+   ```bash
+   # Build the container
+   docker-compose build
+
+   # Start the container
+   docker-compose up -d
+   ```
+
+2. **View logs**
+   ```bash
+   docker-compose logs -f
+   ```
+
+3. **Stop the container**
+   ```bash
+   docker-compose down
+   ```
+
+The application will be available at [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
 
@@ -69,7 +94,9 @@ anvikram-web/
 │   └── lib/                 # Utility functions and API clients
 ├── public/                  # Static assets
 ├── styles/                  # Global styles
-└── supabase/               # Supabase configurations
+├── supabase/               # Supabase configurations
+├── Dockerfile              # Docker configuration
+└── docker-compose.yml      # Docker Compose configuration
 ```
 
 ## 🔧 Configuration
