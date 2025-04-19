@@ -7,82 +7,71 @@ export default function Logo() {
   return (
     <Link href="/" className="relative group">
       <motion.div 
-        className="flex items-center space-x-3"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="flex items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
-        {/* Logo Mark */}
+        {/* Innovative Logo Mark */}
         <motion.div 
-          className="relative w-12 h-12 flex items-center justify-center overflow-hidden"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
+          className="relative w-14 h-14 mr-4"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          {/* Animated background layers */}
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-blue-500 to-cyan-400 rounded-xl"
-            animate={{ 
-              rotate: [0, 5, -5, 0],
-              scale: [1, 1.02, 0.98, 1]
-            }}
-            transition={{ 
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-bl from-transparent via-blue-600/30 to-cyan-400/30 rounded-xl"
-            animate={{ 
-              rotate: [0, -5, 5, 0],
-              scale: [1, 0.98, 1.02, 1]
-            }}
-            transition={{ 
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.5
-            }}
-          />
-          <span className="relative text-2xl font-bold text-white drop-shadow-lg">A</span>
+          {/* Geometric Shapes */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-blue-600 rounded-tl-2xl rounded-br-2xl transform -rotate-6"></div>
+            <div className="absolute inset-0 bg-cyan-400 rounded-tr-2xl rounded-bl-2xl transform rotate-6 mix-blend-multiply"></div>
+          </div>
+          
+          {/* Letter A with custom design */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="relative text-2xl font-bold text-white transform -translate-y-[2px]"
+            >
+              <span className="relative z-10 drop-shadow-lg">A</span>
+              <div className="absolute inset-0 bg-white/10 blur-sm rounded-full"></div>
+            </motion.div>
+          </div>
         </motion.div>
-        
-        {/* Logo Type */}
-        <div className="flex items-baseline">
-          <motion.span 
-            className="text-2xl font-semibold tracking-wide text-white"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+
+        {/* Dynamic Text Layout */}
+        <div className="flex flex-col">
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
+            className="relative"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
-              Angesh
+            <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-blue-100">
+              ANGESH
             </span>
-          </motion.span>
-          <motion.span 
-            className="text-2xl font-light tracking-wide text-white mx-2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/20 to-transparent blur-lg -z-10"></div>
+          </motion.div>
+
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
+            className="relative mt-1"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white/90 to-white/80">
+            <span className="text-lg font-light tracking-[0.2em] text-gray-300 uppercase">
               Vikram
             </span>
-          </motion.span>
+            <div className="absolute h-[1px] w-0 group-hover:w-full bg-gradient-to-r from-blue-500 to-cyan-400 bottom-0 transition-all duration-300"></div>
+          </motion.div>
         </div>
       </motion.div>
 
-      {/* Enhanced Hover Effect */}
+      {/* Interactive Elements */}
       <motion.div 
-        className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600"
-        whileHover={{ scaleX: 1 }}
-        initial={{ scaleX: 0 }}
-        style={{ originX: 0 }}
-        transition={{ duration: 0.4 }}
+        className="absolute -inset-2 bg-gradient-to-r from-blue-600/5 to-cyan-400/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        initial={false}
+        whileHover={{ scale: 1.02 }}
       />
-      
-      {/* Subtle glow effect on hover */}
-      <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 rounded-xl transition-all duration-300 -z-10" />
     </Link>
   );
 } 
