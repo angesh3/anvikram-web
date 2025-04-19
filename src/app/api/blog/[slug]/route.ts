@@ -1,12 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth.server';
 import { supabase } from '@/lib/supabase';
+import { BlogPostUpdate } from '@/types/blog';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+interface Params {
+  params: {
+    slug: string;
+  };
+}
+
+export async function GET(request: NextRequest, { params }: Params) {
   try {
     const token = cookies().get('session')?.value;
     if (!token) {
@@ -21,15 +25,15 @@ export async function GET(
     const { data: post, error } = await supabase
       .from('blog_posts')
       .select('*')
-      .eq('id', params.id)
+      .ilike('title', params.slug.split('-').join(' '))
       .single();
 
-    if (error) {
+    if (error || !post) {
       console.error('Error fetching post:', error);
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ post });
+    return NextResponse.json(post);
   } catch (error) {
     console.error('Error fetching post:', error);
     return NextResponse.json(
@@ -39,10 +43,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: Params) {
   try {
     const token = cookies().get('session')?.value;
     if (!token) {
@@ -54,34 +55,33 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const { title, excerpt, content, status } = await request.json();
+    const body: BlogPostUpdate = await request.json();
+    const { data: post, error: findError } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .ilike('title', params.slug.split('-').join(' '))
+      .single();
 
-    if (!title || !content) {
-      return NextResponse.json(
-        { error: 'Title and content are required' },
-        { status: 400 }
-      );
+    if (findError || !post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    const { data: post, error } = await supabase
+    const { data: updatedPost, error: updateError } = await supabase
       .from('blog_posts')
       .update({
-        title,
-        excerpt: excerpt || title,
-        content,
-        status: status || 'draft',
+        ...body,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.id)
+      .eq('id', post.id)
       .select()
       .single();
 
-    if (error) {
-      console.error('Error updating post:', error);
+    if (updateError) {
+      console.error('Error updating post:', updateError);
       return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
     }
 
-    return NextResponse.json({ post });
+    return NextResponse.json(updatedPost);
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json(
@@ -91,10 +91,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const token = cookies().get('session')?.value;
     if (!token) {
@@ -106,17 +103,27 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const { error } = await supabase
+    const { data: post, error: findError } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .ilike('title', params.slug.split('-').join(' '))
+      .single();
+
+    if (findError || !post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    const { error: deleteError } = await supabase
       .from('blog_posts')
       .delete()
-      .eq('id', params.id);
+      .eq('id', post.id);
 
-    if (error) {
-      console.error('Error deleting post:', error);
+    if (deleteError) {
+      console.error('Error deleting post:', deleteError);
       return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error('Error deleting post:', error);
     return NextResponse.json(

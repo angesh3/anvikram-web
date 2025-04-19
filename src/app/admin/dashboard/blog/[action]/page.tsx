@@ -26,10 +26,9 @@ export default function BlogEditor({ params, searchParams }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<BlogPostInput>({
     title: '',
-    summary: '',
+    excerpt: '',
     content: '',
-    category: '',
-    isPublished: false
+    status: 'draft'
   });
 
   useEffect(() => {
@@ -46,10 +45,9 @@ export default function BlogEditor({ params, searchParams }: Props) {
       const post: BlogPost = await response.json();
       setFormData({
         title: post.title,
-        summary: post.summary,
+        excerpt: post.excerpt,
         content: post.content,
-        category: post.category,
-        isPublished: post.isPublished
+        status: post.status
       });
     } catch (error) {
       console.error('Failed to fetch post:', error);
@@ -128,29 +126,14 @@ export default function BlogEditor({ params, searchParams }: Props) {
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-300">
-                Category
-              </label>
-              <input
-                type="text"
-                name="category"
-                id="category"
-                value={formData.category}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-blue-500 focus:bg-gray-600 focus:ring-0 text-white"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="summary" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="excerpt" className="block text-sm font-medium text-gray-300">
                 Summary
               </label>
               <textarea
-                name="summary"
-                id="summary"
+                name="excerpt"
+                id="excerpt"
                 rows={3}
-                value={formData.summary}
+                value={formData.excerpt}
                 onChange={handleChange}
                 required
                 className="mt-1 block w-full rounded-md bg-gray-700 border-transparent focus:border-blue-500 focus:bg-gray-600 focus:ring-0 text-white"
@@ -174,13 +157,13 @@ export default function BlogEditor({ params, searchParams }: Props) {
             <div className="flex items-center">
               <input
                 type="checkbox"
-                name="isPublished"
-                id="isPublished"
-                checked={formData.isPublished}
-                onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                name="status"
+                id="status"
+                checked={formData.status === 'published'}
+                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'published' : 'draft' }))}
                 className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="isPublished" className="ml-2 block text-sm text-gray-300">
+              <label htmlFor="status" className="ml-2 block text-sm text-gray-300">
                 Publish immediately
               </label>
             </div>

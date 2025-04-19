@@ -10,15 +10,20 @@ export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await fetch('/api/blog');
+        if (!response.ok) {
+          throw new Error('Failed to fetch posts');
+        }
         const data = await response.json();
-        setPosts(data.filter((post: BlogPost) => post.isPublished));
+        setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to fetch posts:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch posts');
       } finally {
         setIsLoading(false);
       }
@@ -29,14 +34,21 @@ export default function Blog() {
 
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchQuery.toLowerCase())
+    post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">Error: {error}</div>
       </div>
     );
   }
@@ -54,7 +66,7 @@ export default function Blog() {
             </p>
           </div>
           
-          {/* Search and Filter */}
+          {/* Search */}
           <div className="max-w-2xl mx-auto mb-12">
             <div className="relative">
               <input
@@ -93,20 +105,16 @@ export default function Blog() {
                   <h2 className="text-2xl font-semibold text-gray-900 flex-grow">
                     {post.title}
                   </h2>
-                  <span className="px-4 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium">
-                    {post.category}
-                  </span>
                 </div>
                 <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                  {post.summary}
+                  {post.excerpt}
                 </p>
                 <div className="flex flex-wrap items-center gap-6 text-sm">
                   <span className="text-gray-500">
-                    {new Date(post.publishedAt).toLocaleDateString()}
+                    {new Date(post.created_at).toLocaleDateString()}
                   </span>
-                  <span className="text-gray-500">{post.readTime}</span>
                   <button
-                    onClick={() => router.push(`/blog/${post.slug}`)}
+                    onClick={() => router.push(`/blog/${post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`)}
                     className="ml-auto text-blue-600 hover:text-blue-700 font-medium inline-flex items-center group"
                   >
                     Read more

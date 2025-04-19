@@ -1,25 +1,21 @@
 export interface BlogPost {
   id: string;
   title: string;
-  slug: string;
-  summary: string;
+  excerpt: string;
   content: string;
-  category: string;
-  publishedAt: string;
-  updatedAt: string;
-  readTime: string;
-  author: string;
-  isPublished: boolean;
+  status: string;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface BlogPostInput {
   title: string;
-  summary: string;
+  excerpt?: string;
   content: string;
-  category: string;
-  isPublished?: boolean;
+  status?: string;
 }
 
 export interface BlogPostUpdate extends Partial<BlogPostInput> {
-  updatedAt?: string;
+  updated_at?: string;
 } 

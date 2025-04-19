@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { BlogPost } from '@/types/blog';
+import Link from 'next/link';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 
 export default function BlogManagement() {
   const router = useRouter();
@@ -51,13 +53,19 @@ export default function BlogManagement() {
       const response = await fetch(`/api/blog/${post.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isPublished: !post.isPublished })
+        body: JSON.stringify({ status: post.status === 'published' ? 'draft' : 'published' })
       });
       
       if (response.ok) {
-        setPosts(posts.map(p => 
-          p.id === post.id ? { ...p, isPublished: !p.isPublished } : p
-        ));
+        setPosts(posts.map(p => {
+          if (p.id === post.id) {
+            return {
+              ...p,
+              status: p.status === 'published' ? 'draft' : 'published'
+            };
+          }
+          return p;
+        }));
       }
     } catch (error) {
       console.error('Failed to toggle publish status:', error);
@@ -86,61 +94,46 @@ export default function BlogManagement() {
         </motion.button>
       </div>
 
-      <div className="bg-gray-800 rounded-xl p-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Published</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {posts.map((post) => (
-                <tr key={post.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-white">{post.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {post.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => handleTogglePublish(post)}
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        post.isPublished
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {post.isPublished ? 'Published' : 'Draft'}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-300">
-                    {new Date(post.publishedAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => handleEditPost(post.id)}
-                      className="text-blue-400 hover:text-blue-300 mr-4"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeletePost(post.id)}
-                      className="text-red-400 hover:text-red-300"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="grid gap-4">
+        {posts.map((post) => (
+          <motion.div
+            key={post.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gray-800 p-6 rounded-lg shadow-lg"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {post.title}
+                </h3>
+                <p className="text-gray-400 mb-4">{post.excerpt}</p>
+                <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <span>
+                    Status: {post.status === 'published' ? 'Published' : 'Draft'}
+                  </span>
+                  <span>
+                    Created: {new Date(post.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  href={`/admin/dashboard/blog/edit/${post.id}`}
+                  className="p-2 text-blue-500 hover:bg-blue-900/20 rounded-full transition-colors"
+                >
+                  <IconEdit size={20} />
+                </Link>
+                <button
+                  onClick={() => handleDeletePost(post.id)}
+                  className="p-2 text-red-500 hover:bg-red-900/20 rounded-full transition-colors"
+                >
+                  <IconTrash size={20} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
