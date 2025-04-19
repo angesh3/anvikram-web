@@ -1,26 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth.server';
-
-// Mock data for demonstration
-let blogPosts = [
-  {
-    id: '1',
-    title: 'Getting Started with Next.js',
-    excerpt: 'Learn the basics of Next.js and build your first application.',
-    content: 'Next.js is a powerful React framework...',
-    status: 'published',
-    publishDate: '2024-03-15'
-  },
-  {
-    id: '2',
-    title: 'Understanding TypeScript',
-    excerpt: 'A comprehensive guide to TypeScript and its features.',
-    content: 'TypeScript adds static typing to JavaScript...',
-    status: 'draft',
-    publishDate: '2024-03-14'
-  },
-];
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
@@ -34,7 +15,17 @@ export async function GET() {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    return NextResponse.json({ posts: blogPosts });
+    const { data: posts, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching posts:', error);
+      return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+    }
+
+    return NextResponse.json({ posts: posts || [] });
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json(
@@ -65,18 +56,25 @@ export async function POST(request: Request) {
       );
     }
 
-    const newPost = {
-      id: String(blogPosts.length + 1),
-      title,
-      excerpt: excerpt || title,
-      content,
-      status: status || 'draft',
-      publishDate: new Date().toISOString().split('T')[0]
-    };
+    const { data: post, error } = await supabase
+      .from('blog_posts')
+      .insert({
+        title,
+        excerpt: excerpt || title,
+        content,
+        status: status || 'draft',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
 
-    blogPosts.push(newPost);
+    if (error) {
+      console.error('Error creating post:', error);
+      return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+    }
 
-    return NextResponse.json({ post: newPost });
+    return NextResponse.json({ post });
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json(

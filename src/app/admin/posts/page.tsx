@@ -20,11 +20,29 @@ export default function AdminPosts() {
 
   useEffect(() => {
     fetchPosts();
+
+    // Add focus event listener to refresh posts when page becomes visible
+    const handleFocus = () => {
+      fetchPosts();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/blog');
+      const response = await fetch('/api/blog', {
+        // Add cache busting query parameter
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch posts');
       }

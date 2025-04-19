@@ -1,26 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth.server';
-
-// Reference to the blog posts array (in a real app, this would be a database)
-let blogPosts = [
-  {
-    id: '1',
-    title: 'Getting Started with Next.js',
-    excerpt: 'Learn the basics of Next.js and build your first application.',
-    content: 'Next.js is a powerful React framework...',
-    status: 'published',
-    publishDate: '2024-03-15'
-  },
-  {
-    id: '2',
-    title: 'Understanding TypeScript',
-    excerpt: 'A comprehensive guide to TypeScript and its features.',
-    content: 'TypeScript adds static typing to JavaScript...',
-    status: 'draft',
-    publishDate: '2024-03-14'
-  }
-];
+import { supabase } from '@/lib/supabase';
 
 export async function GET(
   request: Request,
@@ -37,8 +18,14 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const post = blogPosts.find(p => p.id === params.id);
-    if (!post) {
+    const { data: post, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', params.id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching post:', error);
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
@@ -76,22 +63,25 @@ export async function PUT(
       );
     }
 
-    const postIndex = blogPosts.findIndex(p => p.id === params.id);
-    if (postIndex === -1) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    const { data: post, error } = await supabase
+      .from('blog_posts')
+      .update({
+        title,
+        excerpt: excerpt || title,
+        content,
+        status: status || 'draft',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', params.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating post:', error);
+      return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
     }
 
-    const updatedPost = {
-      ...blogPosts[postIndex],
-      title,
-      excerpt: excerpt || title,
-      content,
-      status: status || 'draft',
-    };
-
-    blogPosts[postIndex] = updatedPost;
-
-    return NextResponse.json({ post: updatedPost });
+    return NextResponse.json({ post });
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json(
@@ -116,13 +106,15 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    const postIndex = blogPosts.findIndex(p => p.id === params.id);
-    if (postIndex === -1) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('id', params.id);
 
-    // Remove the post
-    blogPosts = blogPosts.filter(p => p.id !== params.id);
+    if (error) {
+      console.error('Error deleting post:', error);
+      return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
