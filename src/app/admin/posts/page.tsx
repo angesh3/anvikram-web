@@ -65,12 +65,12 @@ export default function PostsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Blog Posts</h1>
+    <div className="p-8">
+      <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-sm">
+        <h1 className="text-3xl font-bold text-gray-800">Blog Posts</h1>
         <Link 
           href="/admin/posts/new"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
         >
           <IconPlus size={20} />
           New Post
