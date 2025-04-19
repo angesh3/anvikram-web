@@ -10,7 +10,9 @@ const PUBLIC_PATHS = [
   '/api/auth/validate',
   '/login',
   '/favicon.ico',
-  '/assets'
+  '/assets',
+  '/blog',
+  '/api/blog'
 ];
 
 export async function middleware(request: NextRequest) {
@@ -21,6 +23,7 @@ export async function middleware(request: NextRequest) {
 
   // Get the session token from the cookie
   const sessionToken = request.cookies.get('session')?.value;
+  const guestToken = request.cookies.get('guest-token')?.value;
   const session = sessionToken ? await validateSession(sessionToken) : null;
   
   // Handle API routes
@@ -34,7 +37,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // For non-guest users, ensure they're authenticated for protected routes
-    if (!session && !request.nextUrl.pathname.startsWith('/api/public')) {
+    if (!session && !guestToken && !request.nextUrl.pathname.startsWith('/api/public')) {
       return new NextResponse(
         JSON.stringify({ error: 'Authentication required' }),
         { status: 401, headers: { 'Content-Type': 'application/json' } }

@@ -2,11 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth.server';
 import { supabase } from '@/lib/supabase';
+import { createGuestToken } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
     // Check if this is an admin request
     const token = cookies().get('session')?.value;
+    const guestToken = cookies().get('guest-token')?.value;
+    
+    // If no tokens exist, create a guest token
+    if (!token && !guestToken) {
+      await createGuestToken();
+    }
+
+    // Check if user is admin
     const isAdmin = token ? await validateSession(token) : false;
 
     // Query posts based on user role
@@ -45,8 +54,8 @@ export async function POST(request: NextRequest) {
     }
 
     const session = await validateSession(token);
-    if (!session) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
     const body = await request.json();
