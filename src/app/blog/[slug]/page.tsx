@@ -1,82 +1,129 @@
-import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { BlogPost } from '@/types/blog';
-import { TwitterShareButton, LinkedinShareButton } from 'react-share';
-import { IconBrandTwitter, IconBrandLinkedin } from '@tabler/icons-react';
 
-interface Props {
-  params: {
-    slug: string;
-  };
-}
+export default function BlogPostPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  try {
-    const title = slug.split('-').join(' ');
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/post/${encodeURIComponent(title)}`);
-    if (!response.ok) {
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching blog post:', error);
-    return null;
-  }
-}
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        if (!params?.slug) {
+          throw new Error('Invalid URL');
+        }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getBlogPost(params.slug);
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-      description: 'The requested blog post could not be found.',
+        const response = await fetch('/api/blog');
+        if (!response.ok) {
+          throw new Error('Failed to fetch posts');
+        }
+        const posts = await response.json();
+        
+        // Find the post that matches the current slug
+        const currentPost = posts.find((p: BlogPost) => 
+          p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === params.slug
+        );
+
+        if (!currentPost) {
+          throw new Error('Post not found');
+        }
+
+        setPost(currentPost);
+      } catch (error) {
+        console.error('Error fetching post:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch post');
+      } finally {
+        setIsLoading(false);
+      }
     };
+
+    fetchPost();
+  }, [params?.slug]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
-  return {
-    title: post.title,
-    description: post.excerpt,
-  };
-}
-
-export default async function BlogPostPage({ params }: Props) {
-  const post = await getBlogPost(params.slug);
-
-  if (!post || !post.published) {
-    notFound();
+  if (error || !post) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="text-red-500 text-xl">Error: {error || 'Post not found'}</div>
+        <button
+          onClick={() => router.push('/blog')}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Return to Blog
+        </button>
+      </div>
+    );
   }
 
-  const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${params.slug}`;
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-12">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        <div className="text-gray-600 mb-4">
-          {new Date(post.created_at).toLocaleDateString()}
-        </div>
-        {post.excerpt && (
-          <p className="text-xl text-gray-700 mb-6">{post.excerpt}</p>
-        )}
-        <div className="flex gap-4">
-          <TwitterShareButton url={shareUrl} title={post.title}>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              <IconBrandTwitter className="h-5 w-5 mr-2" />
-              Share on Twitter
-            </button>
-          </TwitterShareButton>
-          <LinkedinShareButton url={shareUrl} title={post.title}>
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              <IconBrandLinkedin className="h-5 w-5 mr-2" />
-              Share on LinkedIn
-            </button>
-          </LinkedinShareButton>
-        </div>
-      </header>
+    <div className="min-h-screen pt-16">
+      <article className="max-w-4xl mx-auto px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="prose prose-lg max-w-none"
+        >
+          <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+          <div className="flex items-center gap-4 text-gray-600 mb-8">
+            <time dateTime={post.created_at}>
+              {new Date(post.created_at).toLocaleDateString()}
+            </time>
+            {post.category && (
+              <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                {post.category}
+              </span>
+            )}
+          </div>
+          
+          {post.summary && (
+            <div className="bg-gray-50 p-6 rounded-lg mb-8">
+              <h2 className="text-xl font-semibold mb-2">Summary</h2>
+              <p className="text-gray-700">{post.summary}</p>
+            </div>
+          )}
 
-      <div className="prose prose-lg max-w-none">
-        {post.content}
-      </div>
-    </article>
+          <div className="prose prose-lg max-w-none">
+            {post.content}
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <button
+              onClick={() => router.push('/blog')}
+              className="inline-flex items-center text-blue-600 hover:text-blue-700"
+            >
+              <svg 
+                className="w-4 h-4 mr-2" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                />
+              </svg>
+              Back to Blog
+            </button>
+          </div>
+        </motion.div>
+      </article>
+    </div>
   );
 } 

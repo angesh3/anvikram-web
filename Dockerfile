@@ -9,6 +9,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY .env.production .env.local
 RUN npm run build
 
 # Stage 3: Runner
@@ -25,6 +26,7 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.env.local ./.env.local
 
 # Create cache directory and set permissions
 RUN mkdir -p .next/cache && chown -R nextjs:nodejs .next

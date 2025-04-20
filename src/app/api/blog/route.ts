@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const session = await validateSession(token);
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { BlogPost } from '@/types/blog';
 
 export default function Blog() {
-  const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -113,8 +112,8 @@ export default function Blog() {
                   <span className="text-gray-500">
                     {new Date(post.created_at).toLocaleDateString()}
                   </span>
-                  <button
-                    onClick={() => router.push(`/blog/${post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`)}
+                  <Link
+                    href={`/blog/${post.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                     className="ml-auto text-blue-600 hover:text-blue-700 font-medium inline-flex items-center group"
                   >
                     Read more
@@ -131,7 +130,7 @@ export default function Blog() {
                         d="M17 8l4 4m0 0l-4 4m4-4H3" 
                       />
                     </svg>
-                  </button>
+                  </Link>
                 </div>
               </motion.article>
             ))}

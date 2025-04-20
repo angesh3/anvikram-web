@@ -5,11 +5,19 @@ import Cookies from 'js-cookie';
 import type { User, Session, UserRole } from '@/types/auth';
 import { supabase } from './supabase';
 
-const TOKEN_NAME = 'session';
-const GUEST_TOKEN_NAME = 'guest-token';
-const TOKEN_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'default_secret_replace_in_production'
-);
+const TOKEN_NAME = 'session_token';
+const GUEST_TOKEN_NAME = 'guest_token';
+
+// Ensure JWT_SECRET is available and properly formatted
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not set');
+}
+
+// Convert JWT_SECRET to a consistent format
+const JWT_SECRET = process.env.JWT_SECRET;
+// Create TOKEN_SECRET once and ensure it's properly encoded
+const TOKEN_SECRET = new TextEncoder().encode(JWT_SECRET);
+
 const TOKEN_EXPIRY = '24h';
 const GUEST_TOKEN_EXPIRY = '7d'; // Guest tokens last longer
 
@@ -94,7 +102,7 @@ const isClient = typeof globalThis !== 'undefined' && 'window' in globalThis;
 export function getClientSession(): Session | null {
   if (!isClient) return null;
   
-  const token = Cookies.get('session');
+  const token = Cookies.get('session_token');
   if (!token) return null;
 
   try {

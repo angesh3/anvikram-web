@@ -5,6 +5,8 @@ export interface BlogPost {
   content: string;
   status: string;
   published: boolean;
+  category?: string;
+  summary?: string;
   created_at: string;
   updated_at: string;
 }
@@ -14,6 +16,8 @@ export interface BlogPostInput {
   excerpt?: string;
   content: string;
   status?: string;
+  category?: string;
+  summary?: string;
 }
 
 export interface BlogPostUpdate extends Partial<BlogPostInput> {

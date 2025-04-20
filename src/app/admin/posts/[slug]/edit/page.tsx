@@ -28,7 +28,12 @@ export default function EditPost({ params }: Props) {
       try {
         const response = await fetch(`/api/blog/${params.slug}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch post');
+          const data = await response.json();
+          if (response.status === 401 || response.status === 403) {
+            router.push('/login?from=' + encodeURIComponent(window.location.pathname));
+            return;
+          }
+          throw new Error(data.error || 'Failed to fetch post');
         }
         const data = await response.json();
         setPost(data);
@@ -47,7 +52,7 @@ export default function EditPost({ params }: Props) {
     };
 
     fetchPost();
-  }, [params.slug]);
+  }, [params.slug, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +69,13 @@ export default function EditPost({ params }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update post');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update post');
       }
 
       router.push('/admin/posts');
     } catch (error) {
+      console.error('Error updating post:', error);
       setError(error instanceof Error ? error.message : 'Failed to update post');
     } finally {
       setSaving(false);
@@ -94,6 +101,12 @@ export default function EditPost({ params }: Props) {
     return (
       <div className="p-4 text-red-500">
         Error: {error}
+        <button
+          onClick={() => router.push('/admin/posts')}
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Back to Posts
+        </button>
       </div>
     );
   }

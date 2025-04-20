@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { validateSession } from '@/lib/auth.server';
+import type { User } from '@/types/auth';
 
 const PUBLIC_PATHS = [
   '/_next',
@@ -22,14 +23,14 @@ export async function middleware(request: NextRequest) {
   }
 
   // Get the session token from the cookie
-  const sessionToken = request.cookies.get('session')?.value;
-  const guestToken = request.cookies.get('guest-token')?.value;
+  const sessionToken = request.cookies.get('session_token')?.value;
+  const guestToken = request.cookies.get('guest_token')?.value;
   const session = sessionToken ? await validateSession(sessionToken) : null;
   
   // Handle API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     // Guest users can only access GET methods
-    if (session?.user?.role === 'guest' && request.method !== 'GET') {
+    if (session?.role === 'guest' && request.method !== 'GET') {
       return new NextResponse(
         JSON.stringify({ error: 'Guest users can only perform GET operations' }),
         { status: 403, headers: { 'Content-Type': 'application/json' } }
@@ -49,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle admin routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.role !== 'admin') {
       const url = new URL('/login', request.url);
       url.searchParams.set('from', request.nextUrl.pathname);
       return NextResponse.redirect(url);

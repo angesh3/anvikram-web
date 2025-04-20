@@ -1,8 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { smartSearch } from '@/lib/ai';
 import { supabase } from '@/lib/supabase';
 
-export async function GET(request: Request) {
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const ENABLE_AI_FEATURES = process.env.NEXT_PUBLIC_ENABLE_AI_FEATURES !== 'false';
+
+export async function GET(request: NextRequest) {
+  if (!ENABLE_AI_FEATURES) {
+    return NextResponse.json(
+      { error: 'AI features are disabled in this environment' },
+      { status: 404 }
+    );
+  }
+
+  if (!OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'OpenAI API key is not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
