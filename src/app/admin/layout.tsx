@@ -79,7 +79,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-100 flex">
       <AdminSidebar onLogout={handleLogout} />
-      <main className="flex-1 ml-64 p-6">{children}</main>
+      <main className="flex-1 ml-64 p-6" style={{ paddingTop: '80px' }}>{children}</main>
     </div>
   );
 } 

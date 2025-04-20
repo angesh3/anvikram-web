@@ -94,9 +94,11 @@ export default function Portfolio() {
   );
 
   return (
+    <section className="py-20 bg-white border-b border-gray-100"> 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* Resume Section */}
-      <section className="py-20 bg-white border-b border-gray-100">
+      <section className="py-20 bg-white border-b border-gray-100"  style={{ paddingBottom: '10px' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
@@ -229,5 +231,7 @@ export default function Portfolio() {
         </div>
       </section>
     </div>
+    </div>
+    </section>
   );
 } 
