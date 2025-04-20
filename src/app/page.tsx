@@ -6,25 +6,43 @@ import Link from 'next/link';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 
 export default function Home() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 50, y: 0 });
+  const [clipPosition, setClipPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width * 100;
-        setCursorPosition({ x, y: e.clientY });
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        // Only update position when mouse is over the image
+        if (e.clientX >= rect.left && e.clientX <= rect.right) {
+          setClipPosition(x);
+        } else {
+          setClipPosition(50); // Reset to middle when mouse leaves
+        }
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const handleMouseLeave = () => {
+      setClipPosition(50); // Reset to middle when mouse leaves
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('mousemove', handleMouseMove);
+      container.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('mousemove', handleMouseMove);
+        container.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
   }, []);
 
-  const leftOpacity = Math.max(0, Math.min(1, (50 - cursorPosition.x) / 25 + 1));
-  const rightOpacity = Math.max(0, Math.min(1, (cursorPosition.x - 50) / 25 + 1));
-  const clipPosition = `${cursorPosition.x}%`;
+  const leftOpacity = Math.max(0, Math.min(1, (50 - clipPosition) / 25 + 1));
+  const rightOpacity = Math.max(0, Math.min(1, (clipPosition - 50) / 25 + 1));
 
   return (
     <div className="min-h-screen pt-16">
@@ -46,27 +64,27 @@ export default function Home() {
             {/* Center Image Container */}
             <div className="absolute left-1/2 -translate-x-1/2 w-[600px] h-[600px] z-[50]">
               <div className="relative w-full h-full">
-                {/* Artistic Photo (B&W) */}
+                {/* Regular Photo (Base) */}
                 <div className="absolute inset-0 w-full h-full">
                   <Image
-                    src="/images/home/photo-artistic.png"
-                    alt="Angesh Vikram Artistic"
+                    src="/images/home/photo-regular.jpeg"
+                    alt="Angesh Vikram"
                     fill
                     style={{ objectFit: 'cover' }}
                     priority
                   />
                 </div>
                 
-                {/* Regular Photo with Clip Path */}
+                {/* Artistic Photo (B&W) with Clip Path */}
                 <div 
                   className="absolute inset-0 w-full h-full transition-[clip-path] duration-100"
                   style={{
-                    clipPath: `inset(0 0 0 ${cursorPosition.x}%)`,
+                    clipPath: `inset(0 ${100 - clipPosition}% 0 0)`,
                   }}
                 >
                   <Image
-                    src="/images/home/photo-regular.jpeg"
-                    alt="Angesh Vikram"
+                    src="/images/home/photo-artistic.png"
+                    alt="Angesh Vikram Artistic"
                     fill
                     style={{ objectFit: 'cover' }}
                     priority
@@ -77,7 +95,7 @@ export default function Home() {
                 <div 
                   className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg transition-[left] duration-100"
                   style={{ 
-                    left: clipPosition,
+                    left: `${clipPosition}%`,
                     transform: 'translateX(-50%)',
                   }}
                 />
