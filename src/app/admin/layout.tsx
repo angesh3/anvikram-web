@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import { clearClientSession } from '@/lib/auth.client';
 
 export default function AdminLayout({
   children,
@@ -49,6 +50,9 @@ export default function AdminLayout({
       if (!response.ok) {
         throw new Error('Logout failed');
       }
+      
+      // Clear client-side cookies
+      clearClientSession();
       
       setIsAuthenticated(false);
       router.replace('/admin/login');

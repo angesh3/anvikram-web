@@ -93,5 +93,24 @@ export async function getSession(): Promise<User | null> {
 }
 
 export function clearServerSession(): void {
-  cookies().delete(TOKEN_NAME);
+  const cookieStore = cookies();
+  
+  // Clear all session-related cookies with correct options
+  cookieStore.delete(TOKEN_NAME);
+  cookieStore.set(TOKEN_NAME, '', {
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    expires: new Date(0)
+  });
+  
+  cookieStore.delete(GUEST_TOKEN_NAME);
+  cookieStore.set(GUEST_TOKEN_NAME, '', {
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    expires: new Date(0)
+  });
 } 
