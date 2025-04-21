@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Navigation from '@/components/Navigation'
+import Header from '@/components/layout/Header'
 import Footer from '@/components/Footer'
 
 const inter = Inter({
@@ -11,8 +11,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Angesh Vikram',
-  description: 'Engineering Manager • Cloud & Security Expert • AI Explorer',
+  title: 'Angesh Vikram - Engineering Leader & Cloud Architect',
+  description: 'Engineering leader with expertise in cloud architecture, security engineering, and AI integration.',
 }
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-sans antialiased">
         <div className="relative flex min-h-screen flex-col">
-          <Navigation />
+          <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
