@@ -40,24 +40,30 @@ export default function AdminLayout({
 
   const handleLogout = async () => {
     try {
+      console.log('Initiating logout...');
       const response = await fetch('/api/auth/logout', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include' // Include credentials (cookies) in the request
       });
       
+      console.log('Logout response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Logout failed');
+        throw new Error(`Logout failed with status: ${response.status}`);
       }
       
       // Clear client-side cookies
       clearClientSession();
+      console.log('Client-side session cleared');
       
-      setIsAuthenticated(false);
-      router.replace('/admin/login');
+      // Force a page reload to ensure all state is cleared
+      window.location.href = '/admin/login';
     } catch (error) {
       console.error('Logout failed:', error);
+      alert('Failed to logout. Please try again.');
     }
   };
 

@@ -100,22 +100,30 @@ export async function getSession(): Promise<User | null> {
 export function clearServerSession(): void {
   const cookieStore = cookies();
   
+  console.log('Clearing server session cookies');
+  
   // Clear all session-related cookies with correct options
   cookieStore.delete(TOKEN_NAME);
+  // Set an expired cookie to ensure it's removed
   cookieStore.set(TOKEN_NAME, '', {
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to false for all environments to ensure it works on all setups
     sameSite: 'lax',
     maxAge: 0,
-    expires: new Date(0)
+    expires: new Date(0),
+    httpOnly: true
   });
   
   cookieStore.delete(GUEST_TOKEN_NAME);
+  // Set an expired cookie to ensure it's removed
   cookieStore.set(GUEST_TOKEN_NAME, '', {
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to false for all environments to ensure it works on all setups
     sameSite: 'lax',
     maxAge: 0,
-    expires: new Date(0)
+    expires: new Date(0),
+    httpOnly: true
   });
+  
+  console.log('Session cookies cleared');
 } 
