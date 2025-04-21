@@ -37,9 +37,11 @@ export async function createSession(user: User) {
       .sign(secret);
 
     const cookieStore = cookies();
+    
+    // Updated cookie settings for better compatibility
     cookieStore.set(TOKEN_NAME, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Set to false for local development
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 // 24 hours
@@ -50,6 +52,7 @@ export async function createSession(user: User) {
       cookieStore.delete(GUEST_TOKEN_NAME);
     }
 
+    console.log('Set cookie with token length:', token.length);
     return token;
   } catch (error) {
     console.error('Error creating session:', error);
@@ -82,9 +85,11 @@ export async function getSession(): Promise<User | null> {
     const token = cookieStore.get(TOKEN_NAME)?.value;
     
     if (!token) {
+      console.log('No session token found in cookies');
       return null;
     }
 
+    console.log('Found session token, validating...');
     return validateSession(token);
   } catch (error) {
     console.error('Error getting session:', error);

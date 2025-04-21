@@ -13,20 +13,28 @@ function LoginContent() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
     const checkSession = async () => {
       try {
+        setDebugInfo('Checking session...');
         const response = await fetch('/api/auth/validate');
+        console.log('Session validation response:', response.status);
+        
         const data = await response.json();
+        console.log('Session data:', data);
         
         if (response.ok && data.user?.role === 'admin') {
+          setDebugInfo('Valid admin session, redirecting...');
           router.replace(from);
         } else {
+          setDebugInfo('No valid session');
           setLoading(false);
         }
       } catch (error) {
         console.error('Session check failed:', error);
+        setDebugInfo('Session check error: ' + (error instanceof Error ? error.message : String(error)));
         setLoading(false);
       }
     };
@@ -38,6 +46,7 @@ function LoginContent() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setDebugInfo('Logging in...');
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -45,27 +54,40 @@ function LoginContent() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('Login response status:', response.status);
       const data = await response.json();
+      console.log('Login response data:', data);
 
       if (response.ok) {
-        router.replace(from);
+        setDebugInfo('Login successful, refreshing page...');
+        
+        // Force a page reload to ensure cookies are properly set
+        setTimeout(() => {
+          window.location.href = from;
+        }, 1000);
       } else {
         setError(data.error || 'Invalid credentials');
+        setDebugInfo('Login failed: ' + (data.error || 'Unknown error'));
         setLoading(false);
       }
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
       setError('Failed to login. Please try again.');
+      setDebugInfo('Login error: ' + errorMessage);
+      console.error('Login error:', err);
       setLoading(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <div className="text-gray-600 mb-4">Loading...</div>
+        <div className="text-xs text-gray-500">{debugInfo}</div>
       </div>
     );
   }
@@ -96,6 +118,12 @@ function LoginContent() {
             >
               {error}
             </motion.div>
+          )}
+
+          {debugInfo && (
+            <div className="text-xs text-gray-500 p-2">
+              {debugInfo}
+            </div>
           )}
 
           <div className="space-y-4">
