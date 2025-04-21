@@ -14,7 +14,7 @@ import {
   IconDeviceMobile,
   IconDeviceDesktop,
   IconDeviceTablet,
-  IconUnknown,
+  IconQuestionMark,
 } from '@tabler/icons-react';
 import { VisitorStats, Visitor } from '@/types/analytics';
 
@@ -74,7 +74,7 @@ export default function AnalyticsDashboard() {
       case 'tablet':
         return <IconDeviceTablet size={18} />;
       default:
-        return <IconUnknown size={18} />;
+        return <IconQuestionMark size={18} />;
     }
   };
 
