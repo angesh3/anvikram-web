@@ -1,4 +1,4 @@
-import { IconDashboard, IconArticle, IconUsers, IconSettings, IconLogout } from '@tabler/icons-react';
+import { IconDashboard, IconArticle, IconUsers, IconSettings, IconLogout, IconChartBar } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -9,6 +9,7 @@ interface AdminSidebarProps {
 
 const sidebarLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: IconDashboard },
+  { href: '/admin/analytics', label: 'Analytics', icon: IconChartBar },
   { href: '/admin/posts', label: 'Posts', icon: IconArticle },
   { href: '/admin/users', label: 'Users', icon: IconUsers },
   { href: '/admin/settings', label: 'Settings', icon: IconSettings },

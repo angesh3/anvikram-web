@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/Footer'
+import TrackingPixel from '@/components/TrackingPixel'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1 mt-16 md:mt-20">{children}</main>
           <Footer />
+          <TrackingPixel />
         </div>
       </body>
     </html>
