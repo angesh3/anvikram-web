@@ -29,12 +29,14 @@ export interface VisitorStats {
   recent_visitors: Visitor[];
   locations: {
     country: string;
+    region: string;
     count: number;
   }[];
 }
 
 export interface TopLocation {
   country: string;
+  region: string;
   count: number;
   percentage: number;
 }

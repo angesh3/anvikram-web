@@ -98,29 +98,81 @@ async function getCountryFromIP(ip: string): Promise<{
     // Increment API call counter
     apiCallsCount++;
     
-    // Call the free ipapi.co API (limited to 1000 requests per day)
-    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    // Use ip-api.com (https version requires Pro, so fallback to http but catch errors)
+    try {
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      const response = await fetch(
+        `http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city`,
+        { signal: controller.signal }
+      );
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        console.error('IP Geolocation API error:', response.statusText);
+        return useFallbackCountry(ip);
+      }
+      
+      const data = await response.json();
+      
+      // Check if API returned an error
+      if (data.status === 'fail') {
+        console.error('IP Geolocation API error:', data.message);
+        return useFallbackCountry(ip);
+      }
+      
+      return {
+        country: data.country,
+        city: data.city,
+        region: data.regionName
+      };
+    } catch (fetchError) {
+      // If there's a network error with http, try an alternative API
+      console.error('Error with ip-api.com, trying alternative API:', fetchError);
+      return getCountryFromAlternativeAPI(ip);
+    }
+  } catch (error) {
+    console.error('Error getting country from IP:', error);
+    return useFallbackCountry(ip);
+  }
+}
+
+/**
+ * Alternative API as backup
+ */
+async function getCountryFromAlternativeAPI(ip: string): Promise<{
+  country?: string;
+  city?: string;
+  region?: string;
+}> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    
+    const response = await fetch(`https://ipwho.is/${ip}`, { 
+      signal: controller.signal 
+    });
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
-      console.error('IP Geolocation API error:', response.statusText);
       return useFallbackCountry(ip);
     }
     
     const data = await response.json();
     
-    // Check if API returned an error
-    if (data.error) {
-      console.error('IP Geolocation API error:', data.reason || data.error);
+    if (!data.success) {
       return useFallbackCountry(ip);
     }
     
     return {
-      country: data.country_name,
+      country: data.country,
       city: data.city,
       region: data.region
     };
   } catch (error) {
-    console.error('Error getting country from IP:', error);
+    console.error('Error with alternative IP API:', error);
     return useFallbackCountry(ip);
   }
 }
@@ -189,19 +241,38 @@ export async function getAnalyticsData(): Promise<VisitorStats> {
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
   
-  // Get country data
-  const countryCount = visitors.reduce((acc, visitor) => {
-    if (visitor.country) {
-      if (!acc[visitor.country]) {
-        acc[visitor.country] = 0;
-      }
-      acc[visitor.country]++;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+  // Get country and region data
+  const locationCount: Record<string, { count: number; regions: Record<string, number> }> = {};
   
-  const locations = Object.entries(countryCount)
-    .map(([country, count]) => ({country, count}))
+  visitors.forEach(visitor => {
+    if (visitor.country) {
+      if (!locationCount[visitor.country]) {
+        locationCount[visitor.country] = { count: 0, regions: {} };
+      }
+      locationCount[visitor.country].count++;
+      
+      // Track regions within each country
+      const region = visitor.region || 'Unknown';
+      if (!locationCount[visitor.country].regions[region]) {
+        locationCount[visitor.country].regions[region] = 0;
+      }
+      locationCount[visitor.country].regions[region]++;
+    }
+  });
+  
+  // Convert to array format with regions included
+  const locations = Object.entries(locationCount)
+    .flatMap(([country, data]) => {
+      // Get the most common region for this country
+      const topRegion = Object.entries(data.regions)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      
+      return {
+        country,
+        region: topRegion,
+        count: data.count
+      };
+    })
     .sort((a, b) => b.count - a.count);
   
   // Get most recent visitors
@@ -224,6 +295,9 @@ export async function getAnalyticsData(): Promise<VisitorStats> {
  * Add some mock data for testing
  */
 export function generateMockData(count: number = 50): void {
+  // Clear existing data first
+  visitors = [];
+  
   const paths = ['/', '/about', '/portfolio', '/blog', '/contact', '/query-realm'];
   // Real public DNS server IPs and other public IPs (not private/local IPs)
   const ips = [
@@ -245,6 +319,9 @@ export function generateMockData(count: number = 50): void {
     'https://facebook.com', 
     null
   ];
+  
+  // Reset API call counter
+  apiCallsCount = 0;
   
   // Generate mock data using Promise.all to handle multiple async calls
   const promises = [];

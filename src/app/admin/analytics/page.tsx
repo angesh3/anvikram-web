@@ -271,7 +271,7 @@ export default function AnalyticsDashboard() {
               className="bg-white p-6 rounded-xl shadow-sm"
             >
               <h2 className="text-xl font-bold mb-4 flex items-center">
-                <IconWorld className="mr-2" /> Visitors by Country
+                <IconWorld className="mr-2" /> Visitors by Location
               </h2>
               <div className="space-y-4">
                 {data.locations.slice(0, 5).map((location) => {
@@ -280,7 +280,10 @@ export default function AnalyticsDashboard() {
                     <div key={location.country} className="relative">
                       <div className="flex justify-between mb-1">
                         <span className="text-sm font-medium text-gray-700">
-                          {location.country}
+                          {location.country} 
+                          <span className="ml-1 text-xs text-gray-500">
+                            ({location.region})
+                          </span>
                         </span>
                         <span className="text-sm font-medium text-gray-500">
                           {location.count} ({percentage.toFixed(1)}%)
@@ -315,7 +318,7 @@ export default function AnalyticsDashboard() {
                       <th className="pb-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                       <th className="pb-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page</th>
                       <th className="pb-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
-                      <th className="pb-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                      <th className="pb-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -333,6 +336,9 @@ export default function AnalyticsDashboard() {
                         </td>
                         <td className="py-2 text-sm text-gray-700">
                           {visitor.country || 'Unknown'}
+                          {visitor.region && visitor.region !== 'Unknown' && (
+                            <span className="text-xs text-gray-500 ml-1">({visitor.region})</span>
+                          )}
                         </td>
                       </tr>
                     ))}
