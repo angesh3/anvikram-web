@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter, IconBrandInstagram } from '@tabler/icons-react';
+import { usePathname } from 'next/navigation';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -17,9 +20,11 @@ const socialLinks = [
   { name: 'Instagram', href: '#', icon: IconBrandInstagram },
 ];
 
-export default function Header({ pathname = '/' }: { pathname?: string }) {
+export default function Header() {
+  const pathname = usePathname?.() || '/';
+  
   return (
-    <header className="bg-gray-900 text-white sticky top-0 z-50 my-[5px]">
+    <header className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-[100] shadow-md">
       <nav className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}

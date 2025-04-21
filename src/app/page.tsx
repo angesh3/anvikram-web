@@ -45,10 +45,10 @@ export default function Home() {
   const rightOpacity = Math.max(0, Math.min(1, (clipPosition - 50) / 25 + 1));
 
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="min-h-[calc(100vh-4rem)]" ref={containerRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-4rem)] flex items-center">
+      <div className="min-h-[calc(100vh-5rem)]" ref={containerRef}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-5rem)] flex items-center">
           <div className="w-full relative flex justify-between items-center">
             {/* Left Side Text */}
             <div className={`absolute left-0 w-1/3 transition-opacity duration-300 z-[60]`} 
