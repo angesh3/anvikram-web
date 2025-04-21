@@ -5,6 +5,10 @@ import { Visitor, VisitorStats } from '@/types/analytics';
 // In production, these would be stored in a database like Supabase
 let visitors: Visitor[] = [];
 
+// Track API calls to avoid rate limiting
+let apiCallsCount = 0;
+const API_CALL_LIMIT = 50; // Limit API calls per session to avoid hitting daily limits
+
 /**
  * Determines device type from user agent string
  */
@@ -44,9 +48,8 @@ export async function trackVisitor(
     const device = getDeviceType(userAgent);
     const browser = getBrowser(userAgent);
     
-    // Here we would typically make an API call to get location data from IP
-    // For demo, we're using mock data
-    const country = await getMockCountryFromIP(ip);
+    // Get real country data from IP address
+    const geoData = await getCountryFromIP(ip);
     
     const visitor: Visitor = {
       id: uuidv4(),
@@ -54,9 +57,9 @@ export async function trackVisitor(
       user_agent: userAgent,
       device_type: device,
       browser,
-      country,
-      city: '',
-      region: '',
+      country: geoData.country || 'Unknown',
+      city: geoData.city || '',
+      region: geoData.region || '',
       timestamp: new Date().toISOString(),
       url_path: path,
       referrer: referrer || 'direct'
@@ -73,20 +76,75 @@ export async function trackVisitor(
 }
 
 /**
- * Mock function to simulate getting country data from IP
- * In production, you would use a real geolocation API
+ * Get country data from IP using a real geolocation API
  */
-async function getMockCountryFromIP(ip: string): Promise<string> {
-  // Mock implementation - would be replaced with actual API call
+async function getCountryFromIP(ip: string): Promise<{
+  country?: string;
+  city?: string;
+  region?: string;
+}> {
+  try {
+    // Skip API call for localhost or private IPs
+    if (ip === '127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
+      return { country: 'Local Network', city: 'Local', region: 'Local' };
+    }
+    
+    // Check if we've exceeded API call limit
+    if (apiCallsCount >= API_CALL_LIMIT) {
+      console.log('API call limit reached, using fallback data');
+      return useFallbackCountry(ip);
+    }
+    
+    // Increment API call counter
+    apiCallsCount++;
+    
+    // Call the free ipapi.co API (limited to 1000 requests per day)
+    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    
+    if (!response.ok) {
+      console.error('IP Geolocation API error:', response.statusText);
+      return useFallbackCountry(ip);
+    }
+    
+    const data = await response.json();
+    
+    // Check if API returned an error
+    if (data.error) {
+      console.error('IP Geolocation API error:', data.reason || data.error);
+      return useFallbackCountry(ip);
+    }
+    
+    return {
+      country: data.country_name,
+      city: data.city,
+      region: data.region
+    };
+  } catch (error) {
+    console.error('Error getting country from IP:', error);
+    return useFallbackCountry(ip);
+  }
+}
+
+/**
+ * Fallback to mock data if API fails
+ */
+function useFallbackCountry(ip: string): { country: string; city: string; region: string } {
+  // Mock implementation as fallback
   const countries = [
     'United States', 'India', 'Brazil', 'United Kingdom', 
     'Canada', 'Germany', 'France', 'Japan', 'Australia', 
     'Mexico', 'Spain', 'Italy'
   ];
   
-  // Generate a consistent country based on the IP address to make it look realistic
+  // Generate a consistent country based on the IP address
   const ipSum = ip.split('.').map(Number).reduce((a, b) => a + b, 0);
-  return countries[ipSum % countries.length];
+  const country = countries[ipSum % countries.length];
+  
+  return { 
+    country,
+    city: 'Unknown City',
+    region: 'Unknown Region'
+  };
 }
 
 /**
@@ -167,9 +225,10 @@ export async function getAnalyticsData(): Promise<VisitorStats> {
  */
 export function generateMockData(count: number = 50): void {
   const paths = ['/', '/about', '/portfolio', '/blog', '/contact', '/query-realm'];
+  // Real public DNS server IPs and other public IPs (not private/local IPs)
   const ips = [
-    '192.168.1.1', '8.8.8.8', '1.1.1.1', '76.76.21.21',
-    '157.240.22.35', '31.13.65.36', '172.217.14.206', '151.101.65.121'
+    '8.8.8.8', '1.1.1.1', '9.9.9.9', '208.67.222.222',
+    '76.76.21.21', '64.6.64.6', '84.200.69.80', '77.88.8.8'
   ];
   const userAgents = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
@@ -187,16 +246,26 @@ export function generateMockData(count: number = 50): void {
     null
   ];
   
+  // Generate mock data using Promise.all to handle multiple async calls
+  const promises = [];
+  
   for (let i = 0; i < count; i++) {
     const randomDaysAgo = Math.floor(Math.random() * 30);
     const timestamp = new Date();
     timestamp.setDate(timestamp.getDate() - randomDaysAgo);
     
-    trackVisitor(
+    const promise = trackVisitor(
       ips[Math.floor(Math.random() * ips.length)],
       userAgents[Math.floor(Math.random() * userAgents.length)],
       paths[Math.floor(Math.random() * paths.length)],
       referrers[Math.floor(Math.random() * referrers.length)]
     );
+    
+    promises.push(promise);
   }
+  
+  // Wait for all tracking calls to complete
+  Promise.all(promises).catch(err => {
+    console.error('Error generating mock data:', err);
+  });
 } 
