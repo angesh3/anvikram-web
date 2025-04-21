@@ -45,10 +45,10 @@ export default function Home() {
   const rightOpacity = Math.max(0, Math.min(1, (clipPosition - 50) / 25 + 1));
 
   return (
-    <div className="min-h-screen pt-16 md:pt-20">
+    <div className="min-h-screen pt-10 md:pt-16" style={{ paddingTop: '0px' }}>
       {/* Hero Section */}
       <div className="min-h-[calc(100vh-5rem)]" ref={containerRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-12 md:py-0 md:min-h-[calc(100vh-5rem)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-8 md:py-0 md:min-h-[calc(100vh-5rem)]">
           {/* Mobile Layout - Stack layout */}
           <div className="md:hidden w-full flex flex-col items-center">
             {/* Image at top on mobile */}
@@ -84,68 +84,73 @@ export default function Home() {
           </div>
 
           {/* Desktop Layout - Interactive split layout */}
-          <div className="hidden md:block w-full relative flex justify-between items-center">
-            {/* Left Side Text */}
-            <div className={`absolute left-0 w-1/3 transition-opacity duration-300 z-[60]`} 
-                 style={{ opacity: leftOpacity }}>
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
-                {'<Hands-On>'} Leader
-              </h1>
-              <p className="text-lg text-gray-600 mt-6 max-w-sm">
-                Engineering leader driving innovation through hands-on development and team empowerment.
-              </p>
-            </div>
-
-            {/* Center Image Container */}
-            <div className="absolute left-1/2 -translate-x-1/2 w-[500px] h-[500px] lg:w-[600px] lg:h-[600px] z-[50]">
-              <div className="relative w-full h-full">
-                {/* Regular Photo (Base) */}
-                <div className="absolute inset-0 w-full h-full">
-                  <Image
-                    src="/images/home/photo-regular.jpeg"
-                    alt="Angesh Vikram"
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    priority
-                  />
+          <div className="hidden md:flex w-full h-[calc(100vh-8rem)] relative items-center justify-center">
+            {/* Container for the centered content */}
+            <div className="flex w-full max-w-6xl mx-auto relative">
+              {/* Text container - Left */}
+              <div className="w-1/3 pr-8 z-10">
+                <div className="transition-opacity duration-300" style={{ opacity: leftOpacity }}>
+                  <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+                    {'<Hands-On>'} <br/> Leader
+                  </h1>
+                  <p className="text-lg text-gray-600 mt-6">
+                    Engineering leader driving innovation through hands-on development and team empowerment.
+                  </p>
                 </div>
-                
-                {/* Artistic Photo (B&W) with Clip Path */}
-                <div 
-                  className="absolute inset-0 w-full h-full transition-[clip-path] duration-100"
-                  style={{
-                    clipPath: `inset(0 ${100 - clipPosition}% 0 0)`,
-                  }}
-                >
-                  <Image
-                    src="/images/home/photo-artistic.png"
-                    alt="Angesh Vikram Artistic"
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    priority
-                  />
-                </div>
-
-                {/* Vertical Line Indicator */}
-                <div 
-                  className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg transition-[left] duration-100"
-                  style={{ 
-                    left: `${clipPosition}%`,
-                    transform: 'translateX(-50%)',
-                  }}
-                />
               </div>
-            </div>
+              
+              {/* Center Image Container */}
+              <div className="w-1/3 h-[500px] z-0 relative mx-auto">
+                <div className="relative w-full h-full">
+                  {/* Regular Photo (Base) */}
+                  <div className="absolute inset-0 w-full h-full rounded-xl overflow-hidden">
+                    <Image
+                      src="/images/home/photo-regular.jpeg"
+                      alt="Angesh Vikram"
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      priority
+                    />
+                  </div>
+                  
+                  {/* Artistic Photo (B&W) with Clip Path */}
+                  <div 
+                    className="absolute inset-0 w-full h-full transition-[clip-path] duration-100 rounded-xl overflow-hidden"
+                    style={{
+                      clipPath: `inset(0 ${100 - clipPosition}% 0 0)`,
+                    }}
+                  >
+                    <Image
+                      src="/images/home/photo-artistic.png"
+                      alt="Angesh Vikram Artistic"
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      priority
+                    />
+                  </div>
 
-            {/* Right Side Text */}
-            <div className={`absolute right-0 w-1/3 text-right transition-opacity duration-300 z-[60]`}
-                 style={{ opacity: rightOpacity }}>
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
-                {'<Architect>'}
-              </h1>
-              <p className="text-lg text-gray-600 mt-6 max-w-sm ml-auto">
-                Cloud & Security Architect leading enterprise solutions with a focus on scalable, secure architectures and AI integration.
-              </p>
+                  {/* Vertical Line Indicator */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg transition-[left] duration-100"
+                    style={{ 
+                      left: `${clipPosition}%`,
+                      transform: 'translateX(-50%)',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Text container - Right */}
+              <div className="w-1/3 pl-8 z-10 text-right">
+                <div className="transition-opacity duration-300" style={{ opacity: rightOpacity }}>
+                  <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+                    {'<Architect>'}
+                  </h1>
+                  <p className="text-lg text-gray-600 mt-6">
+                    Cloud & Security Architect leading enterprise solutions with a focus on scalable, secure architectures and AI integration.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
