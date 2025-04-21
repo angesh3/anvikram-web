@@ -28,11 +28,11 @@ const projects = [
   },
   {
     title: 'Security Compliance Framework',
-    description: 'Automated security compliance framework implementing CIS benchmarks and security best practices for cloud infrastructure.',
-    image: '/images/portfolio/security.jpg',
+    description: 'Comprehensive security framework with automated auditing for regulatory compliance across cloud environments.',
+    image: '/images/portfolio/scf-logo.svg',
     category: 'security',
     technologies: ['Python', 'AWS', 'Docker', 'Kubernetes'],
-    github: 'https://github.com/angesh3/security-framework',
+    github: 'https://github.com/angesh3/angesh-scf',
     demo: 'https://security.anvikram.com',
     status: 'Active'
   },
@@ -175,14 +175,25 @@ export default function Portfolio() {
                 key={index} 
                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
-                <div className="relative h-56 bg-gray-100">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    className="group-hover:scale-105 transition-transform duration-300"
-                  />
+                <div className="relative h-56 bg-gray-50 flex items-center justify-center">
+                  {project.image.endsWith('.svg') ? (
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      width={220}
+                      height={220}
+                      style={{ objectFit: 'contain' }}
+                      className="group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      className="group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
@@ -215,6 +226,7 @@ export default function Portfolio() {
                       >
                         <FaGithub size={20} />
                       </Link>
+                      {/* Demo links commented out for now
                       <Link 
                         href={project.demo}
                         className="text-gray-600 hover:text-blue-600 transition-colors"
@@ -222,6 +234,7 @@ export default function Portfolio() {
                       >
                         <FaExternalLinkAlt size={18} />
                       </Link>
+                      */}
                     </div>
                   </div>
                 </div>

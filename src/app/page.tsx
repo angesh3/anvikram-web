@@ -128,18 +128,19 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Link href="/portfolio" className="group">
               <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-56">
+                <div className="relative h-56 flex items-center justify-center p-4 bg-gray-50">
                   <Image
-                    src="/images/portfolio/cloud.jpg"
-                    alt="Cloud Infrastructure"
-                    fill
-                    style={{ objectFit: 'cover' }}
+                    src="/images/portfolio/scf-logo.svg"
+                    alt="Security Compliance Framework"
+                    width={220}
+                    height={220}
+                    style={{ objectFit: 'contain' }}
                     className="group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Cloud Infrastructure Automation</h3>
-                  <p className="text-gray-600">Scalable and secure cloud infrastructure solutions using AWS and Terraform.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Security Compliance Framework</h3>
+                  <p className="text-gray-600">Comprehensive security framework with automated auditing for regulatory compliance across cloud environments.</p>
                 </div>
               </div>
             </Link>
