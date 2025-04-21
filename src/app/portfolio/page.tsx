@@ -9,7 +9,7 @@ const projects = [
   {
     title: 'Personal Website',
     description: 'Modern, responsive personal website built with Next.js 14, TailwindCSS, and TypeScript. Features a clean design, dark mode support, and optimized performance.',
-    image: '/images/portfolio/website.jpg',
+    image: '/images/portfolio/website-logo.svg',
     category: 'frontend',
     technologies: ['Next.js', 'TypeScript', 'TailwindCSS', 'React'],
     github: 'https://github.com/angesh3/anvikram-web',
@@ -19,7 +19,7 @@ const projects = [
   {
     title: 'Cloud Infrastructure Automation',
     description: 'Infrastructure as Code (IaC) solution for AWS cloud resources. Automated deployment of scalable, secure cloud infrastructure using Terraform and AWS CDK.',
-    image: '/images/portfolio/cloud.jpg',
+    image: '/images/portfolio/cloud-logo.svg',
     category: 'cloud',
     technologies: ['AWS', 'Terraform', 'Python', 'Docker'],
     github: 'https://github.com/angesh3/cloud-automation',
@@ -39,7 +39,7 @@ const projects = [
   {
     title: 'AI Development Platform',
     description: 'Platform for developing and deploying machine learning models with automated training pipelines and model versioning.',
-    image: '/images/portfolio/ai.jpg',
+    image: '/images/portfolio/ai-logo.svg',
     category: 'ai',
     technologies: ['Python', 'TensorFlow', 'Docker', 'Kubernetes'],
     github: 'https://github.com/angesh3/ai-platform',
