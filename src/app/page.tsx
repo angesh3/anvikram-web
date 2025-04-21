@@ -146,12 +146,13 @@ export default function Home() {
             </Link>
             <Link href="/portfolio" className="group">
               <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-56">
+                <div className="relative h-56 flex items-center justify-center p-4 bg-gray-50">
                   <Image
-                    src="/images/portfolio/ai.jpg"
-                    alt="AI Platform"
-                    fill
-                    style={{ objectFit: 'cover' }}
+                    src="/images/portfolio/ai-logo.svg"
+                    alt="AI Development Platform"
+                    width={220}
+                    height={220}
+                    style={{ objectFit: 'contain' }}
                     className="group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

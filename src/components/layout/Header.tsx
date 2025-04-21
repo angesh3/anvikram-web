@@ -24,8 +24,8 @@ export default function Header({ pathname = '/' }: { pathname?: string }) {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="bg-blue-600 w-10 h-10 flex items-center justify-center rounded-lg text-xl font-bold">
-              A
+            <div className="w-10 h-10 flex items-center justify-center">
+              <img src="/images/logo.svg" alt="Angesh Vikram Logo" className="w-full h-full" />
             </div>
             <div>
               <div className="text-lg font-semibold">ANGESH</div>
