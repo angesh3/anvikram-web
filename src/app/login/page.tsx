@@ -138,7 +138,7 @@ function LoginContent() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="admin@example.com"
+                placeholder="Enter your email"
               />
             </div>
 
@@ -168,14 +168,6 @@ function LoginContent() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-
-        <div className="mt-4 text-sm text-gray-500">
-          <p>Demo Credentials:</p>
-          <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>Email: admin@example.com</li>
-            <li>Password: admin123</li>
-          </ul>
-        </div>
       </motion.div>
     </div>
   );
