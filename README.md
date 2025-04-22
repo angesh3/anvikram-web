@@ -130,3 +130,76 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 Angesh Vikram - [@angeshvikram](https://twitter.com/angeshvikram)
 
 Project Link: [https://github.com/angesh3/anvikram-web](https://github.com/angesh3/anvikram-web)
+
+# Setting up HTTPS with AWS Certificate Manager
+
+This guide explains how to enable HTTPS for your website using AWS Certificate Manager (ACM) and Nginx.
+
+## Prerequisites
+
+- AWS account with ACM certificate issued for your domain
+- Domain name configured in Route 53 or another DNS provider
+- Docker and Docker Compose installed
+
+## Steps to Enable HTTPS
+
+### 1. Download ACM Certificate
+
+The AWS Certificate Manager doesn't allow direct download of private keys for certificates. There are two options:
+
+#### Option A: Using Load Balancer with ACM (Recommended)
+
+1. Create an Application Load Balancer (ALB) in AWS
+2. Configure the ALB to use your ACM certificate for HTTPS (port 443)
+3. Point the ALB to your EC2 instance or ECS service
+4. Update your DNS to point to the ALB instead of directly to your server
+
+#### Option B: Export Certificate from ACM for Nginx
+
+Since you can't directly export the private key from ACM, you need to:
+
+1. Export the certificate from the AWS Console or using the AWS CLI:
+   ```
+   aws acm export-certificate --certificate-arn your-certificate-arn --passphrase passphrase > certificate.pem
+   ```
+
+2. Place the certificate files in the `./ssl` directory:
+   - `./ssl/certificate.crt` - The certificate chain
+   - `./ssl/private.key` - The private key
+
+### 2. Configure SSL in Nginx
+
+The `nginx.conf` and `docker-compose.production.yml` files have been updated to support HTTPS.
+
+1. Ensure the SSL certificates are properly placed in the `./ssl` directory
+2. Start your application using Docker Compose:
+   ```
+   docker-compose -f docker-compose.production.yml up -d
+   ```
+
+### 3. Verify HTTPS is Working
+
+After deploying, visit your website using HTTPS (https://yourdomain.com) and verify that:
+- The connection is secure
+- The certificate is valid
+- All HTTP requests redirect to HTTPS
+
+## Troubleshooting
+
+### Certificate Issues
+- Make sure the certificate chain is complete and in the correct order
+- Check that the private key matches the certificate
+
+### Connection Issues
+- Verify that port 443 is open in your security group/firewall
+- Check Nginx logs for SSL-related errors:
+  ```
+  docker-compose -f docker-compose.production.yml logs nginx
+  ```
+
+## Additional Security Recommendations
+
+1. Enable HTTP/2 for better performance
+2. Set up proper HSTS headers
+3. Configure secure cipher suites
+4. Regularly renew your certificates before expiration
